@@ -43,3 +43,77 @@ export const login = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+export const getUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        res.status(200).json(users);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const addUser = async (req, res) => {
+    const { name, email, password, role } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ message: "User already exists" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const newUser = new User({ name, email, password: hashedPassword, role });
+        await newUser.save();
+        res.status(200).json("User added successfully");
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const updateUser = async (req, res) => {
+    const { id } = req.params;
+    const { name, email, password, role } = req.body;
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(400).json({ message: "User does not exist" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 12);
+        await User.findByIdAndUpdate
+            (id, { name, email, password: hashedPassword, role });
+        res.status(200).json("User updated successfully");
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const deleteUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(400).json({ message: "User does not exist" });
+        }
+        await User.findByIdAndDelete(id);
+        res.status(200).json("User deleted successfully");
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const getUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(400).json({ message: "User does not exist" });
+        }
+        res.status(200).json(user);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
