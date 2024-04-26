@@ -1,4 +1,4 @@
-import Teacher from "../models/teachers";
+import Teacher from "../models/teachers.js";
 import jwt
  from "jsonwebtoken";
 import dotenv from "dotenv";

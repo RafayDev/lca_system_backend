@@ -1,6 +1,6 @@
-import auth from "../middlewares/auth";
 import express from "express";
 import { getBatches, getBatch, addBatch, updateBatch, deleteBatch } from "../controllers/batches.js";
+import auth from "../middlewares/auth.js";
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import Batch from "../models/batches";
+import Batch from "../models/batches.js";
 
 export const getBatches = async (req, res) => {
     try {
