@@ -38,7 +38,7 @@ export const login = async (req, res) => {
         const data = { user: { id: user._id } };
         const authToken = jwt.sign(data, JWT_SECRET);
         //set token in cookies
-        res.cookie.set("authToken", authToken, {
+        res.cookie("authToken", authToken, {
             httpOnly: true,
             secure: true,
             sameSite: "none",
