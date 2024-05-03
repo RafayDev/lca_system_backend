@@ -9,7 +9,7 @@ router.get('/:id',auth,getUser)
 router.post('/register', register);
 router.post('/login', login);
 router.post('/add',auth, addUser);
-router.patch('/update/:id',auth, updateUser);
+router.post('/update/:id',auth, updateUser);
 router.delete('/delete/:id',auth, deleteUser);
 
 
