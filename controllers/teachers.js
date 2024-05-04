@@ -78,7 +78,33 @@ export const updateTeacher = async (req, res) => {
     const { name, email, phone } = req.body;
     const { image, resume } = req.files;
     try {
-        await Teacher.findByIdAndUpdate(id, { name, email, phone, resume, image });
+        const teacher = await Teacher.findById(id);
+        //delete image from public/teacher_images folder
+        const imagePath = `public${teacher.image.split("public")[1]}`;
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+        }
+        //delete resume from public/teacher_resumes folder
+        const resumePath = `public${teacher.resume.split("public")[1]}`;
+        if (fs.existsSync(resumePath)) {
+            fs.unlinkSync(resumePath);
+        }
+        //save image to public/teacher_images folder
+        const newImagePath = `public/teacher_images/${image.name}`;
+        image.mv(newImagePath, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+        //save resume to public/teacher_resumes folder
+        const newResumePath = `public/teacher_resumes/${resume.name}`;
+        resume.mv(newResumePath, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+        const newTeacher = new Teacher({ name, email, phone, resume: newResumePath, image: newImagePath });
+        await Teacher.findByIdAndUpdate(id, newTeacher);
         res.status(200).json("Teacher updated successfully");
     } catch (error) {
         res.status(500).json({ message: error.message });
