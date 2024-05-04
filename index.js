@@ -22,7 +22,7 @@ app.use(cors());
 app.use('/public', express.static(join(__dirname, 'public')));
 app.use('/users', usersRoutes);
 app.use('/courses', coursesRoutes);
-// app.use('/teachers', teachersRoutes);
+app.use('/teachers', teachersRoutes);
 // app.use('/batches', batchesRoutes);
 
 const CONNECTION_URL = process.env.MONGO_URI;
