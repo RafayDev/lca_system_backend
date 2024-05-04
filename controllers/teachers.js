@@ -1,6 +1,6 @@
 import Teacher from "../models/teachers.js";
-import jwt
- from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -54,6 +54,7 @@ export const getTeacher = async (req, res) => {
 export const deleteTeacher = async (req, res) => {
     const { id } = req.params;
     try {
+        const teacher = await Teacher.findById(id);
         //delete image from public/teacher_images folder
         const imagePath = `public${teacher.image.split("public")[1]}`;
         if (fs.existsSync(imagePath)) {
