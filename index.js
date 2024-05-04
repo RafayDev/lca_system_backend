@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import fileUpload from 'express-fileupload';
 import usersRoutes from './routes/users.js';
 import coursesRoutes from './routes/courses.js';
 import teachersRoutes from './routes/teachers.js';
@@ -18,6 +19,7 @@ dotenv.config();
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+app.use(fileUpload());
 app.use(cors());
 app.use('/public', express.static(join(__dirname, 'public')));
 app.use('/users', usersRoutes);

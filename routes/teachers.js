@@ -1,7 +1,6 @@
 import express from "express";
 import { getTeachers, getTeacher, addTeacher, updateTeacher, deleteTeacher } from '../controllers/teachers.js';
 import auth from '../middlewares/auth.js';
-
 const router = express.Router();
 
 //make routes with auth middle ware

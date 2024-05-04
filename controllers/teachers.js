@@ -6,11 +6,27 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export const addTeacher = async (req, res) => {
-    const { name, email, phone, resume, image } = req.body;
+    const { name, email, phone } = req.body;
+    const { image, resume } = req.files;
     try {
-        const newTeacher = new Teacher({ name, email, phone, resume, image });
+        //save image to public/teacher_images folder
+        const imagePath = `public/teacher_images/${image.name}`;
+        image.mv(imagePath, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+        //save resume to public/teacher_resumes folder
+        const resumePath = `public/teacher_resumes/${resume.name}`;
+        resume.mv(resumePath, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+
+        const newTeacher = new Teacher({ name, email, phone, resume: resumePath, image: imagePath });
         await newTeacher.save();
-        res.status(200).json(newTeacher);
+        res.status(200).json("Teacher added successfully");
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
