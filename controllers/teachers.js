@@ -54,6 +54,16 @@ export const getTeacher = async (req, res) => {
 export const deleteTeacher = async (req, res) => {
     const { id } = req.params;
     try {
+        //delete image from public/teacher_images folder
+        const imagePath = `public${teacher.image.split("public")[1]}`;
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+        }
+        //delete resume from public/teacher_resumes folder
+        const resumePath = `public${teacher.resume.split("public")[1]}`;
+        if (fs.existsSync(resumePath)) {
+            fs.unlinkSync(resumePath);
+        }
         await Teacher.findByIdAndDelete(id);
         res.status(200).json("Teacher deleted successfully");
     } catch (error) {
@@ -64,7 +74,8 @@ export const deleteTeacher = async (req, res) => {
 
 export const updateTeacher = async (req, res) => {
     const { id } = req.params;
-    const { name, email, phone, resume, image } = req.body;
+    const { name, email, phone } = req.body;
+    const { image, resume } = req.files;
     try {
         await Teacher.findByIdAndUpdate(id, { name, email, phone, resume, image });
         res.status(200).json("Teacher updated successfully");
