@@ -103,8 +103,8 @@ export const updateTeacher = async (req, res) => {
                 console.log(err);
             }
         });
-        const newTeacher = new Teacher({ name, email, phone, resume: newResumePath, image: newImagePath });
-        await Teacher.findByIdAndUpdate(id, newTeacher);
+        await Teacher.findByIdAndUpdate(id, { name, email, phone, resume: newResumePath, image: newImagePath });
+        
         res.status(200).json("Teacher updated successfully");
     } catch (error) {
         res.status(500).json({ message: error.message });
