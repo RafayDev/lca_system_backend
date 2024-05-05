@@ -38,7 +38,7 @@ export const addStudent = async (req, res) => {
       }
     });
 
-    const newstudent = new student({
+    const newstudent = new Student({
       name,
       email,
       phone,
