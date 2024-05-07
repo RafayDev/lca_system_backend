@@ -22,7 +22,7 @@ export const getBatch = async (req, res) => {
 export const addBatch = async (req, res) => {
     const { name, description, courses } = req.body;
     try {
-        const newBatch = new Batch({ name, description, courses });
+        const newBatch = new Batch({ name, description, startdate, enddate });
         await newBatch.save();
         res.status(200).json("Batch added successfully");
     } catch (error) {
@@ -32,7 +32,7 @@ export const addBatch = async (req, res) => {
 
 export const updateBatch = async (req, res) => {
     const { id } = req.params;
-    const { name, description, courses } = req.body;
+    const { name, description, startdate, enddate } = req.body;
     try {
         await Batch.findByIdAndUpdate(id, { name, description, courses });
         res.status(200).json("Batch updated successfully");

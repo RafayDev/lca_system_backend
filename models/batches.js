@@ -1,15 +1,10 @@
 import mongoose from "mongoose";
 
 const batchesSchema = mongoose.Schema({
-    name: String,
-    description: String,
-    courses:[
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Course'
-        }
-    ]
-    });
-const Batch = mongoose.model('Batch', batchesSchema);
+  name: String,
+  description: String,
+  startdate: String,
+  enddate: String,
+});
+const Batch = mongoose.model("Batch", batchesSchema);
 export default Batch;
-
