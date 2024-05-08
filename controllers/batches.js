@@ -50,3 +50,44 @@ export const deleteBatch = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+export const assignCoursesToBatch = async (req, res) => {
+    const { batchId, courseIds } = req.body;
+    try {
+        const batch = await Batch.findById(batchId);
+        batch.courses = courseIds;
+        await batch.save();
+        res.status(200).json("Courses assigned to batch successfully");
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+export const assignTeachersToBatch = async (req, res) => {
+    const { batchId, teacherIds } = req.body;
+    try {
+        const batch = await Batch.findById(batchId);
+        batch.teachers = teacherIds;
+        await batch.save();
+        res.status(200).json("Teachers assigned to batch successfully");
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+export const getBatchCourses = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const batch = await Batch.findById(id).populate("courses");
+        res.status(200).json(batch.courses);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const getBatchTeachers = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const batch = await Batch.findById(id).populate("teachers");
+        res.status(200).json(batch.teachers);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
