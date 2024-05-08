@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/',auth,getBatches)
 router.get('/:id',auth,getBatch)
 router.post('/add',auth,addBatch);
-router.patch('/update/:id',auth,updateBatch);
+router.post('/update/:id',auth,updateBatch);
 router.delete('/delete/:id',auth,deleteBatch);
 
 export default router
