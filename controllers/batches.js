@@ -2,7 +2,7 @@ import Batch from "../models/batches.js";
 
 export const getBatches = async (req, res) => {
     try {
-        const batches = await Batch.find().populate('courses');
+        const batches = await Batch.find()
         res.status(200).json(batches);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -12,7 +12,7 @@ export const getBatches = async (req, res) => {
 export const getBatch = async (req, res) => {
     const { id } = req.params;
     try {
-        const batch = await Batch.findById(id).populate('courses');
+        const batch = await Batch.findById(id)
         res.status(200).json(batch);
     } catch (error) {
         res.status(500).json({ message: error.message });
