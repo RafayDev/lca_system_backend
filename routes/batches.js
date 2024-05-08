@@ -12,8 +12,8 @@ router.post('/update/:id',auth,updateBatch);
 router.delete('/delete/:id',auth,deleteBatch);
 router.get('/courses/:id',auth,getBatchCourses)
 router.get('/teachers/:id',auth,getBatchTeachers)
-router.post('/assignCourses/:id',auth,assignCoursesToBatch)
-router.post('/assignTeachers/:id',auth,assignTeachersToBatch)
+router.post('/assignCourses',auth,assignCoursesToBatch)
+router.post('/assignTeachers',auth,assignTeachersToBatch)
 
 
 export default router
