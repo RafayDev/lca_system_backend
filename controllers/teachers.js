@@ -66,27 +66,9 @@ export const deleteTeacher = async (req, res) => {
     const { id } = req.params;
     try {
       const teacher = await Teacher.findById(id);
-      
-      // Check if the teacher exists
       if (!teacher) {
         return res.status(404).json({ message: "Teacher not found" });
       }
-  
-      // Check if the teacher has an associated image
-      if (teacher.image) {
-        const imageUrl = teacher.image;
-  
-        // Check if the image exists in Firebase Storage
-        const imageRef = storage.refFromURL(imageUrl);
-        const imageExists = await checkIfFileExists(imageRef);
-  
-        if (imageExists) {
-          // Delete image from Firebase Storage
-          await imageRef.delete();
-        }
-      }
-  
-      // Delete teacher from the database
       await Teacher.findByIdAndDelete(id);
   
       res.status(200).json("Teacher deleted successfully");
@@ -94,20 +76,7 @@ export const deleteTeacher = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
-  
-  // Function to check if a file exists in Firebase Storage
-  const checkIfFileExists = async (fileRef) => {
-    try {
-      const fileSnapshot = await fileRef.getMetadata();
-      return !!fileSnapshot;
-    } catch (error) {
-      if (error.code === "storage/object-not-found") {
-        return false;
-      } else {
-        throw error;
-      }
-    }
-  };
+
 
 export const updateTeacher = async (req, res) => {
   const { id } = req.params;
@@ -120,35 +89,6 @@ export const updateTeacher = async (req, res) => {
     if (!teacher) {
       return res.status(404).json({ message: "Teacher not found" });
     }
-
-    // Check if the teacher has an associated image
-    if (teacher.image) {
-      const imageUrl = teacher.image;
-
-      // Check if the image exists in Firebase Storage
-      const imageRef = storage.refFromURL(imageUrl);
-      const imageExists = await checkIfFileExists(imageRef);
-
-      if (imageExists) {
-        // Delete image from Firebase Storage
-        await imageRef.delete();
-      }
-    }
-
-    // Check if the teacher has an associated resume
-    if (teacher.resume) {
-      const resumeUrl = teacher.resume;
-
-      // Check if the resume exists in Firebase Storage
-      const resumeRef = storage.refFromURL(resumeUrl);
-      const resumeExists = await checkIfFileExists(resumeRef);
-
-      if (resumeExists) {
-        // Delete resume from Firebase Storage
-        await resumeRef.delete();
-      }
-    }
-
     // Upload image to Firebase Storage
     const imageFileName = `${Date.now()}_${image.name}`;
     const imageRef = ref(storage, `teacher_images/${imageFileName}`);
