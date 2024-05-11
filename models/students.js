@@ -15,7 +15,12 @@ const studentSchema = mongoose.Schema({
     completion_year:String,
     marks_cgpa:String,
     cnic_image:String,
+    cnic_back_image:String,
     image: String,
+    batch:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Batch"
+    }
     });
 const Student = mongoose.model('Student', studentSchema);
 export default Student;

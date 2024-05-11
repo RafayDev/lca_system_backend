@@ -10,7 +10,7 @@ import usersRoutes from './routes/users.js';
 import coursesRoutes from './routes/courses.js';
 import teachersRoutes from './routes/teachers.js';
 import batchesRoutes from './routes/batches.js';
-
+import studentRoutes from './routes/students.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -21,11 +21,13 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(fileUpload());
 app.use(cors());
+app.get("/", (req, res) => res.send("Express on Vercel"));
 app.use('/public', express.static(join(__dirname, 'public')));
 app.use('/users', usersRoutes);
 app.use('/courses', coursesRoutes);
 app.use('/teachers', teachersRoutes);
 app.use('/batches', batchesRoutes);
+app.use('/students', studentRoutes);
 
 const CONNECTION_URL = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
