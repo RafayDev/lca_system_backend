@@ -1,6 +1,8 @@
 import Student from "../models/students.js";
 import jwt from "jsonwebtoken";
 import fs from "fs";
+import { storage } from "../utils/firebase.js";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import dotenv from "dotenv";
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -20,32 +22,47 @@ export const addStudent = async (req, res) => {
     university,
     completion_year,
     marks_cgpa,
+    batch,
   } = req.body;
   const { image, cnic_image, cnic_back_image } = req.files;
   try {
-    //save image to public/student_images folder
-    const imagePath = `public/student_images/${image.name}`;
-    image.mv(imagePath, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-    //save cnic_image to public/student_cnic_image folder
-    const cnic_imagePath = `public/student_cnic_images/${cnic_image.name}`;
-    resume.mv(cnic_imagePath, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
+    //save image to firebase storage
+    const imageFile = image;
+    const imageFileName = `${Date.now()}_${imageFile.name}`;
+    const imageRef = ref(storage, `student_images/${imageFileName}`);
+    const imageUploadTask = uploadBytes(imageRef, imageFile.data);
+    //wait for the upload task to complete
+    await imageUploadTask;
+    //get the download url of the uploaded image
+    const imagePath = await getDownloadURL(imageRef);
 
-    //save cnic_back_image to public/student_cnic_back_image folder
-    const cnic_back_imagePath = `public/student_cnic_back_images/${cnic_back_image.name}`;
-    cnic_back_image.mv(cnic_back_imagePath, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-
+    //save cnic image to firebase storage
+    const cnicImageFile = cnic_image;
+    const cnicImageFileName = `${Date.now()}_${cnicImageFile.name}`;
+    const cnicImageRef = ref(
+      storage,
+      `student_cnic_images/${cnicImageFileName}`
+    );
+    const cnicImageUploadTask = uploadBytes(cnicImageRef, cnicImageFile.data);
+    //wait for the upload task to complete
+    await cnicImageUploadTask;
+    //get the download url of the uploaded image
+    const cnic_imagePath = await getDownloadURL(cnicImageRef);
+    //save cnic back image to firebase storage
+    const cnicBackImageFile = cnic_back_image;
+    const cnicBackImageFileName = `${Date.now()}_${cnicBackImageFile.name}`;
+    const cnicBackImageRef = ref(
+      storage,
+      `student_cnic_back_images/${cnicBackImageFileName}`
+    );
+    const cnicBackImageUploadTask = uploadBytes(
+      cnicBackImageRef,
+      cnicBackImageFile.data
+    );
+    //wait for the upload task to complete
+    await cnicBackImageUploadTask;
+    //get the download url of the uploaded image
+    const cnic_back_imagePath = await getDownloadURL(cnicBackImageRef);
     const newstudent = new Student({
       name,
       email,
@@ -60,6 +77,7 @@ export const addStudent = async (req, res) => {
       university,
       completion_year,
       marks_cgpa,
+      batch,
       cnic_image: cnic_imagePath,
       image: imagePath,
       cnic_back_image: cnic_back_imagePath,
@@ -94,26 +112,9 @@ export const deleteStudent = async (req, res) => {
   const { id } = req.params;
   try {
     const student = await Student.findById(id);
-    //delete image from public/student_images folder
-    const imagePath = `public${student.student_images.split("public")[1]}`;
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
     }
-    //delete resume from public/student_resumes folder
-    const cnicPath = `public${student.student_cnic_images.split("public")[1]}`;
-    if (fs.existsSync(cnicPath)) {
-      fs.unlinkSync(cnicPath);
-    }
-
-    //delete cnic_back_image from public/student_cnic_back_images folder
-    const cnic_back_imagePath = `public${student.student_cnic_back_images.split(
-      "public"
-    )[1]}`;
-    if (fs.existsSync(cnic_back_imagePath)) {
-      fs.unlinkSync(cnic_back_imagePath);
-    }
-
-    //delete cnic_image from public/student_cnic_images folder
     await student.findByIdAndDelete(id);
     res.status(200).json("student deleted successfully");
   } catch (error) {
@@ -137,51 +138,51 @@ export const updateStudent = async (req, res) => {
     university,
     completion_year,
     marks_cgpa,
+    batch
   } = req.body;
-  const { image, cnic_image } = req.files;
+  const { image, cnic_image, cnic_back_image } = req.files;
   try {
     const student = await Student.findById(id);
-    //delete image from public/student_images folder
-    const imagePath = `public${student.student_images.split("public")[1]}`;
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
     }
-    //delete resume from public/student_resumes folder
-    const resumePath = `public${student.student_cnic_images.split("public")[1]}`;
-    if (fs.existsSync(resumePath)) {
-      fs.unlinkSync(resumePath);
-    }
+    //save image to firebase storage
+    const imageFile = image;
+    const imageFileName = `${Date.now()}_${imageFile.name}`;
+    const imageRef = ref(storage, `student_images/${imageFileName}`);
+    const imageUploadTask = uploadBytes(imageRef, imageFile.data);
+    //wait for the upload task to complete
+    await imageUploadTask;
+    //get the download url of the uploaded image
+    const imagePath = await getDownloadURL(imageRef);
 
-    //delete cnic_back_image from public/student_cnic_back_images folder
-    const cnic_back_imagePath = `public${student.student_cnic_back_images.split(
-      "public"
-    )[1]}`;
-    if (fs.existsSync(cnic_back_imagePath)) {
-      fs.unlinkSync(cnic_back_imagePath);
-    }
-
-    //save image to public/student_images folder
-    const newImagePath = `public/student_images/${image.name}`;
-    image.mv(newImagePath, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-    //save resume to public/student_resumes folder
-    const newResumePath = `public/student_cnic_image/${resume.name}`;
-    resume.mv(newResumePath, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-
-    //save cnic_back_image to public/student_cnic_back_images folder
-    const new_cnic_back_imagePath = `public/student_cnic_back_images/${cnic_image.name}`;
-    cnic_image.mv(new_cnic_back_imagePath, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
+    //save cnic image to firebase storage
+    const cnicImageFile = cnic_image;
+    const cnicImageFileName = `${Date.now()}_${cnicImageFile.name}`;
+    const cnicImageRef = ref(
+      storage,
+      `student_cnic_images/${cnicImageFileName}`
+    );
+    const cnicImageUploadTask = uploadBytes(cnicImageRef, cnicImageFile.data);
+    //wait for the upload task to complete
+    await cnicImageUploadTask;
+    //get the download url of the uploaded image
+    const cnic_imagePath = await getDownloadURL(cnicImageRef);
+    //save cnic back image to firebase storage
+    const cnicBackImageFile = cnic_back_image;
+    const cnicBackImageFileName = `${Date.now()}_${cnicBackImageFile.name}`;
+    const cnicBackImageRef = ref(
+      storage,
+      `student_cnic_back_images/${cnicBackImageFileName}`
+    );
+    const cnicBackImageUploadTask = uploadBytes(
+      cnicBackImageRef,
+      cnicBackImageFile.data
+    );
+    //wait for the upload task to complete
+    await cnicBackImageUploadTask;
+    //get the download url of the uploaded image
+    const cnic_back_imagePath = await getDownloadURL(cnicBackImageRef);
     await student.findByIdAndUpdate(id, {
       name,
       email,
@@ -196,8 +197,10 @@ export const updateStudent = async (req, res) => {
       university,
       completion_year,
       marks_cgpa,
-      cnic_image: newResumePath,
-      image: newImagePath,
+      batch,
+      cnic_image: cnic_imagePath,
+      image: imagePath,
+      cnic_back_image: cnic_back_imagePath,
     });
 
     res.status(200).json("Student updated successfully");
