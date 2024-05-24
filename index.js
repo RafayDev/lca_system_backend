@@ -12,6 +12,8 @@ import teachersRoutes from './routes/teachers.js';
 import batchesRoutes from './routes/batches.js';
 import studentRoutes from './routes/students.js';
 import seminarRoutes from './routes/seminars.js';
+import rolesRoutes from './routes/roles.js';
+import permissionsRoutes from './routes/permissions.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -30,6 +32,8 @@ app.use('/teachers', teachersRoutes);
 app.use('/batches', batchesRoutes);
 app.use('/students', studentRoutes);
 app.use('/seminars', seminarRoutes);
+app.use('/roles', rolesRoutes);
+app.use('/permissions', permissionsRoutes);
 
 const CONNECTION_URL = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
