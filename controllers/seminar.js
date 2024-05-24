@@ -1,9 +1,9 @@
 import Seminar from "../models/seminar.js";
 
 export const addSeminar = async (req, res) => {
-    const { name, email, phone, city, qualification, will_attend } = req.body;
+    const { name,date,time,description } = req.body;
     try {
-        const newSeminar = new Seminar({ name, email, phone, city, qualification, will_attend });
+        const newSeminar = new Seminar({ name,date,time,description });
         await newSeminar.save();
         res.status(200).json("Seminar added successfully");
     } catch (error) {
@@ -40,10 +40,25 @@ export const deleteSeminar = async (req, res) => {
 
 export const updateSeminar = async (req, res) => {
     const { id } = req.params;
-    const { name, email, phone, city, qualification, will_attend } = req.body;
+    const { name,date,time,description  } = req.body;
     try {
-        await Seminar.findByIdAndUpdate(id, { name, email, phone, city, qualification, will_attend });
+        await Seminar.findByIdAndUpdate(id, { name,date,time,description });
         res.status(200).json("Seminar updated successfully");
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const getTodaySeminars = async (req, res) => {
+    const date = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Karachi' });
+    console.log(date);
+    try {
+        const seminars = await Seminar.find({ date });
+        if(seminars.length > 0){
+            return res.status(200).json(seminars);
+        } else {
+            return res.status(200).json([]);
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
