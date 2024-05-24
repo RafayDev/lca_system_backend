@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
+import Role from '../models/roles.js';
+import Permission from '../models/permissions.js';
 
 export const register = async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -27,28 +29,53 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body;
     try {
+        // Find the user by email
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
+
+        // Check if the password is correct
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
-        const data = { user: { id: user._id } };
+
+        // Fetch the role associated with the user
+        // Fetch the role associated with the user by name
+        const role = await Role.findOne({ name: user.role });
+
+        if (!role) {
+            return res.status(500).json({ message: "Role not found" });
+        }
+
+        // Fetch the permissions associated with the role
+        const permissions = await Permission.find({ _id: { $in: role.permissions } });
+
+        // Create a JWT token with user ID and role
+        const data = {
+            user: {
+                id: user._id,
+                role: role.name, // or role._id if you prefer
+                permissions: permissions.map(permission => permission.name) // Adjust as needed
+            }
+        };
         const authToken = jwt.sign(data, JWT_SECRET);
-        //set token in cookies
+
+        // Set token in cookies
         res.cookie("authToken", authToken, {
             httpOnly: true,
             secure: true,
             sameSite: "none",
-        })
-        res.status(200).json({ authToken });
+        });
+
+        // Send response with authToken and permissions
+        res.status(200).json({ authToken, permissions: permissions.map(permission => permission.name) });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 export const getUsers = async (req, res) => {
     try {
