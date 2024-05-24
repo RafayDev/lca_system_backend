@@ -11,6 +11,7 @@ import coursesRoutes from './routes/courses.js';
 import teachersRoutes from './routes/teachers.js';
 import batchesRoutes from './routes/batches.js';
 import studentRoutes from './routes/students.js';
+import seminarRoutes from './routes/seminars.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -28,6 +29,7 @@ app.use('/courses', coursesRoutes);
 app.use('/teachers', teachersRoutes);
 app.use('/batches', batchesRoutes);
 app.use('/students', studentRoutes);
+app.use('/seminars', seminarRoutes);
 
 const CONNECTION_URL = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
