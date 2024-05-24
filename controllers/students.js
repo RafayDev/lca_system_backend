@@ -1,5 +1,6 @@
 import Student from "../models/students.js";
 import Batch from "../models/batches.js";
+import { sendWelcomeEmail } from "../utils/email.js";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import { storage } from "../utils/firebase.js";
@@ -44,7 +45,7 @@ export const addStudent = async (req, res) => {
     await newStudent.save();
 
     // Send welcome email to the student
-    // await sendWelcomeEmail(email, name);
+    await sendWelcomeEmail(email, name);
 
     res.status(200).json("Student Added Successfully");
   } catch (error) {
@@ -78,7 +79,7 @@ export const deleteStudent = async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-    await student.findByIdAndDelete(id);
+    await Student.findByIdAndDelete(id);
     res.status(200).json("student deleted successfully");
   } catch (error) {
     res.status(500).json({ message: error.message });
