@@ -51,7 +51,6 @@ export const updateSeminar = async (req, res) => {
 
 export const getTodaySeminars = async (req, res) => {
     const date = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Karachi' });
-    console.log(date);
     try {
         const seminars = await Seminar.find({ date });
         if(seminars.length > 0){
