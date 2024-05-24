@@ -57,3 +57,25 @@ export const updateRole = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const assignPermissionsToRole = async (req, res) => {
+    const { roleId, permissionIds } = req.body;
+    try {
+        const role = await Role.findById(roleId);
+        role.permissions = permissionIds;
+        await role.save();
+        res.status(200).json("Permissions assigned to role successfully");
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const getRolePermissions = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const role = await Role.findById(id).populate("permissions");
+        res.status(200).json(role.permissions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
