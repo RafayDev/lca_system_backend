@@ -1,4 +1,5 @@
 import Student from "../models/students.js";
+import Batch from "../models/batches.js";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import { storage } from "../utils/firebase.js";
@@ -12,77 +13,39 @@ export const addStudent = async (req, res) => {
     name,
     email,
     phone,
-    cnic,
-    admission_date,
-    city,
-    date_of_birth,
-    father_name,
-    father_phone,
-    latest_degree,
-    university,
-    completion_year,
-    marks_cgpa,
-    batch,
+    batch: batchId,
+    paid_fee,
+    pending_fee,
   } = req.body;
-  const { image, cnic_image, cnic_back_image } = req.files;
-  try {
-    //save image to firebase storage
-    const imageFile = image;
-    const imageFileName = `${Date.now()}_${imageFile.name}`;
-    const imageRef = ref(storage, `student_images/${imageFileName}`);
-    const imageUploadTask = uploadBytes(imageRef, imageFile.data);
-    //wait for the upload task to complete
-    await imageUploadTask;
-    //get the download url of the uploaded image
-    const imagePath = await getDownloadURL(imageRef);
 
-    //save cnic image to firebase storage
-    const cnicImageFile = cnic_image;
-    const cnicImageFileName = `${Date.now()}_${cnicImageFile.name}`;
-    const cnicImageRef = ref(
-      storage,
-      `student_cnic_images/${cnicImageFileName}`
-    );
-    const cnicImageUploadTask = uploadBytes(cnicImageRef, cnicImageFile.data);
-    //wait for the upload task to complete
-    await cnicImageUploadTask;
-    //get the download url of the uploaded image
-    const cnic_imagePath = await getDownloadURL(cnicImageRef);
-    //save cnic back image to firebase storage
-    const cnicBackImageFile = cnic_back_image;
-    const cnicBackImageFileName = `${Date.now()}_${cnicBackImageFile.name}`;
-    const cnicBackImageRef = ref(
-      storage,
-      `student_cnic_back_images/${cnicBackImageFileName}`
-    );
-    const cnicBackImageUploadTask = uploadBytes(
-      cnicBackImageRef,
-      cnicBackImageFile.data
-    );
-    //wait for the upload task to complete
-    await cnicBackImageUploadTask;
-    //get the download url of the uploaded image
-    const cnic_back_imagePath = await getDownloadURL(cnicBackImageRef);
-    const newstudent = new Student({
+  const admission_date = req.body.admission_date || new Date();
+
+  try {
+    
+    const batch = await Batch.findById(batchId);
+
+    if (!batch) {
+      return res.status(400).json({ message: "Invalid batch provided" });
+    }
+
+    const total_fee = batch.total_fee;
+
+    const newStudent = new Student({
       name,
       email,
       phone,
-      cnic,
+      batch: batchId,
       admission_date,
-      city,
-      date_of_birth,
-      father_name,
-      father_phone,
-      latest_degree,
-      university,
-      completion_year,
-      marks_cgpa,
-      batch,
-      cnic_image: cnic_imagePath,
-      image: imagePath,
-      cnic_back_image: cnic_back_imagePath,
+      total_fee,
+      paid_fee,
+      pending_fee,
     });
-    await newstudent.save();
+
+    await newStudent.save();
+
+    // Send welcome email to the student
+    // await sendWelcomeEmail(email, name);
+
     res.status(200).json("Student Added Successfully");
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -138,7 +101,10 @@ export const updateStudent = async (req, res) => {
     university,
     completion_year,
     marks_cgpa,
-    batch
+    batch,
+    paid_fee,
+    pending_fee,
+    total_fee,
   } = req.body;
   const { image, cnic_image, cnic_back_image } = req.files;
   try {
@@ -201,6 +167,9 @@ export const updateStudent = async (req, res) => {
       cnic_image: cnic_imagePath,
       image: imagePath,
       cnic_back_image: cnic_back_imagePath,
+      paid_fee,
+      pending_fee,
+      total_fee,
     });
 
     res.status(200).json("Student updated successfully");
