@@ -5,6 +5,7 @@ const batchesSchema = mongoose.Schema({
   description: String,
   startdate: String,
   enddate: String,
+  Batch_fee:String,
   courses:[
     {
       type: mongoose.Schema.Types.ObjectId,
