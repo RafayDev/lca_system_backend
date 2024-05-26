@@ -23,8 +23,13 @@ export const addStudent = async (req, res) => {
   const admission_date = req.body.admission_date || new Date();
 
   try {
-    const batch = await Batch.findById(batchId);
+    // Check if the email already exists
+    const existingStudent = await Student.findOne({ email });
+    if (existingStudent) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
 
+    const batch = await Batch.findById(batchId);
     if (!batch) {
       return res.status(400).json({ message: "Invalid batch provided" });
     }
@@ -110,22 +115,30 @@ export const updateStudent = async (req, res) => {
     total_fee,
   } = req.body;
   const { image, cnic_image, cnic_back_image } = req.files;
+
   try {
     const student = await Student.findById(id);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-    //save image to firebase storage
+
+    // Check if the new email is already in use by another student
+    if (email && email !== student.email) {
+      const existingStudent = await Student.findOne({ email });
+      if (existingStudent) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+    }
+
+    // Save image to Firebase storage
     const imageFile = image;
     const imageFileName = `${Date.now()}_${imageFile.name}`;
     const imageRef = ref(storage, `student_images/${imageFileName}`);
     const imageUploadTask = uploadBytes(imageRef, imageFile.data);
-    //wait for the upload task to complete
     await imageUploadTask;
-    //get the download url of the uploaded image
     const imagePath = await getDownloadURL(imageRef);
 
-    //save cnic image to firebase storage
+    // Save CNIC image to Firebase storage
     const cnicImageFile = cnic_image;
     const cnicImageFileName = `${Date.now()}_${cnicImageFile.name}`;
     const cnicImageRef = ref(
@@ -133,11 +146,10 @@ export const updateStudent = async (req, res) => {
       `student_cnic_images/${cnicImageFileName}`
     );
     const cnicImageUploadTask = uploadBytes(cnicImageRef, cnicImageFile.data);
-    //wait for the upload task to complete
     await cnicImageUploadTask;
-    //get the download url of the uploaded image
     const cnic_imagePath = await getDownloadURL(cnicImageRef);
-    //save cnic back image to firebase storage
+
+    // Save CNIC back image to Firebase storage
     const cnicBackImageFile = cnic_back_image;
     const cnicBackImageFileName = `${Date.now()}_${cnicBackImageFile.name}`;
     const cnicBackImageRef = ref(
@@ -148,11 +160,11 @@ export const updateStudent = async (req, res) => {
       cnicBackImageRef,
       cnicBackImageFile.data
     );
-    //wait for the upload task to complete
     await cnicBackImageUploadTask;
-    //get the download url of the uploaded image
     const cnic_back_imagePath = await getDownloadURL(cnicBackImageRef);
-    await student.findByIdAndUpdate(id, {
+
+    // Update the student record
+    await Student.findByIdAndUpdate(id, {
       name,
       email,
       phone,
