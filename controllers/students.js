@@ -6,6 +6,7 @@ import fs from "fs";
 import { storage } from "../utils/firebase.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import dotenv from "dotenv";
+import QRCode from "qrcode";
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -22,7 +23,6 @@ export const addStudent = async (req, res) => {
   const admission_date = req.body.admission_date || new Date();
 
   try {
-    
     const batch = await Batch.findById(batchId);
 
     if (!batch) {
@@ -43,6 +43,8 @@ export const addStudent = async (req, res) => {
     });
 
     await newStudent.save();
+
+    await generateQrCode(newStudent._id);
 
     // Send welcome email to the student
     await sendWelcomeEmail(email, name);
@@ -174,6 +176,44 @@ export const updateStudent = async (req, res) => {
     });
 
     res.status(200).json("Student updated successfully");
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const generateQrCode = async (studentId) => {
+  let newQrCode = null;
+  try {
+    // Generate QR code
+    QRCode.toString(
+      studentId.toString(),
+      {
+        errorCorrectionLevel: "H",
+        type: "svg",
+      },
+      async function (err, data) {
+        if (err) throw err;
+        await Student.findByIdAndUpdate(studentId, { qrcode: data });
+        newQrCode = data;
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+  return newQrCode;
+};
+
+export const getQrCode = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    await generateQrCode(student._id);
+
+    res.status(200).json((await Student.findById(student._id)).qrcode);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
