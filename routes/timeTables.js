@@ -4,9 +4,9 @@ import auth from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.post('/timetable', createTimeTable);
-router.put('/timetable/:id', updateTimeTable);
-router.get('/timetable/:id', getTimeTableById);
-router.get('/timetables', getAllTimeTables);
+router.post('/add', createTimeTable);
+router.put('/update/:id', updateTimeTable);
+router.get('/:id', getTimeTableById);
+router.get('/', getAllTimeTables);
 
 export default router
