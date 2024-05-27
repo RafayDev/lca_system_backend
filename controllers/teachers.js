@@ -44,7 +44,6 @@ export const addTeacher = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-  
 };
 
 export const getTeachers = async (req, res) => {
@@ -84,7 +83,7 @@ export const deleteTeacher = async (req, res) => {
 export const updateTeacher = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
-  const { image, resume } = req.files;
+  const { image, resume } = req.files || {};
 
   try {
     const teacher = await Teacher.findById(id);
@@ -100,17 +99,23 @@ export const updateTeacher = async (req, res) => {
       }
     }
 
-    const imageFileName = `${Date.now()}_${image.name}`;
-    const imageRef = ref(storage, `teacher_images/${imageFileName}`);
-    const imageUploadTask = uploadBytes(imageRef, image.data);
-    await imageUploadTask;
-    const newImagePath = await getDownloadURL(imageRef);
+    let newImagePath = teacher.image;
+    if (image) {
+      const imageFileName = `${Date.now()}_${image.name}`;
+      const imageRef = ref(storage, `teacher_images/${imageFileName}`);
+      const imageUploadTask = uploadBytes(imageRef, image.data);
+      await imageUploadTask;
+      newImagePath = await getDownloadURL(imageRef);
+    }
 
-    const resumeFileName = `${Date.now()}_${resume.name}`;
-    const resumeRef = ref(storage, `teacher_resumes/${resumeFileName}`);
-    const resumeUploadTask = uploadBytes(resumeRef, resume.data);
-    await resumeUploadTask;
-    const newResumePath = await getDownloadURL(resumeRef);
+    let newResumePath = teacher.resume;
+    if (resume) {
+      const resumeFileName = `${Date.now()}_${resume.name}`;
+      const resumeRef = ref(storage, `teacher_resumes/${resumeFileName}`);
+      const resumeUploadTask = uploadBytes(resumeRef, resume.data);
+      await resumeUploadTask;
+      newResumePath = await getDownloadURL(resumeRef);
+    }
 
     await Teacher.findByIdAndUpdate(id, {
       name,
