@@ -24,7 +24,7 @@ export const addBatch = async (req, res) => {
     try {
         const newBatch = new Batch({ name, description, Batch_fee, startdate, enddate });
         await newBatch.save();
-        res.status(200).json("Batch added successfully");
+        res.status(200).json(newBatch);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -50,6 +50,7 @@ export const deleteBatch = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
 export const assignCoursesToBatch = async (req, res) => {
     const { batchId, courseIds } = req.body;
     try {
@@ -61,6 +62,7 @@ export const assignCoursesToBatch = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
 export const assignTeachersToBatch = async (req, res) => {
     const { batchId, teacherIds } = req.body;
     try {
@@ -72,6 +74,7 @@ export const assignTeachersToBatch = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
 export const getBatchCourses = async (req, res) => {
     const { id } = req.params;
     try {
