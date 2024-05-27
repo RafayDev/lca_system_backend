@@ -20,10 +20,10 @@ export const getAttendee = async (req, res) => {
 }
 
 export const createAttendee = async (req, res) => {
-    const { name, email, phone, city, qualification, attend_type, seminar_id } = req.body;
+    const { name, phone, city, qualification, attend_type, seminar_id } = req.body;
 
     try {
-        const newAttendee = new Attendee({ name, email, phone, city, qualification, attend_type, seminar: seminar_id });
+        const newAttendee = new Attendee({ name, phone, city, qualification, attend_type, seminar: seminar_id });
         await newAttendee.save();
         res.status(201).json({ message: "Attendee created successfully" });
     } catch (error) {
