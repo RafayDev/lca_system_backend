@@ -1,8 +1,8 @@
-import Attendence from "../models/attendence";
-import Batch from "../models/batches";
-import Student from "../models/students";
-import Course from "../models/courses";
-import TimeTable from "../models/timeTables";
+import Attendence from "../models/attendence.js";
+import Batch from "../models/batches.js";
+import Student from "../models/students.js";
+import Course from "../models/courses.js";
+import TimeTable from "../models/timeTables.js";
 import moment from "moment";
 
 export const createAttendence = async (req, res) => {

@@ -1,6 +1,6 @@
 import express from "express";
-import { createAttendence } from "../controllers/attendence";
-import auth from "../middlewares/auth";
+import { createAttendence } from "../controllers/attendence.js";
+import auth from "../middlewares/auth.js";
 
 const router = express.Router();
 
