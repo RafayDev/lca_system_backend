@@ -15,7 +15,7 @@ import seminarRoutes from './routes/seminars.js';
 import rolesRoutes from './routes/roles.js';
 import permissionsRoutes from './routes/permissions.js';
 import seminarAttendeesRoutes from './routes/seminarAttendees.js';
-import attendenceRoutes from './routes/attendence.js';
+// import attendenceRoutes from './routes/attendence.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -37,7 +37,7 @@ app.use('/seminars', seminarRoutes);
 app.use('/roles', rolesRoutes);
 app.use('/permissions', permissionsRoutes);
 app.use('/attendees',seminarAttendeesRoutes);
-app.use('/attendence',attendenceRoutes);
+// app.use('/attendence',attendenceRoutes);
 
 const CONNECTION_URL = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
