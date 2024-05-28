@@ -9,7 +9,17 @@ export const createAttendence = async (req, res) => {
     const {student_id} = req.body;
     try{
         const student = await Student.findById(student_id);
+        if(!student){
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        const currentDate = moment().format("YYYY-MM-DD");
+        const currentTime = moment();
+        const currentDay = currentTime.format("dddd");
         const batch = await Batch.findById(student.batch);
+        if(!batch){
+            return res.status(404).json({ message: "Batch not found" });
+        }
         const timeTable = await TimeTable.findOne({
             batch: batch._id,
             start_time: { $lte: currentTime.toDate() }, // Convert moment object to Date
