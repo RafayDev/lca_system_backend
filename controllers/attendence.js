@@ -6,7 +6,7 @@ import TimeTable from "../models/timeTables";
 import moment from "moment";
 
 export const createAttendence = async (req, res) => {
-    const {student_id} = req.params;
+    const {student_id} = req.body;
     try{
         const student = await Student.findById(student_id);
         const batch = await Batch.findById(student.batch);
