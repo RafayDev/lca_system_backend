@@ -43,6 +43,6 @@ export const createAttendence = async (req, res) => {
         res.status(200).json({ message: "Attendence created successfully" });
 
     } catch(error){
-        console.log(error);
+        res.status(500).json({ message: error.message });
     }
 }
