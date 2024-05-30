@@ -12,7 +12,7 @@ router.post('/update/:id',auth,updateStudent);
 router.delete('/delete/:id',auth,deleteStudent);
 router.get('/qrcode/:id',auth,getQrCode);
 router.post('/studentInfoUpdate/:id',auth,updateStudentinfo);
-router.post('/checkStudentFields/:id',auth,checkStudentFields);
+router.get('/checkStudentFields/:id',auth,checkStudentFields);
 
 
 export default router
