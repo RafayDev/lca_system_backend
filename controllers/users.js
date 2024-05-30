@@ -238,7 +238,7 @@ export const changePassword = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      const resetToken = crypto.randomBytes(20).toString('hex');
+      const resetToken = crypto.randomBytes(10).toString('hex');
   
       user.resetPasswordToken = resetToken;
       user.resetPasswordExpires = Date.now() + 3600000;
