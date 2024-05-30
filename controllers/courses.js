@@ -1,4 +1,6 @@
 import Course from "../models/courses.js";
+import Student from "../models/students.js";
+import Batch from "../models/batches.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
@@ -53,6 +55,34 @@ export const updateCourse = async (req, res) => {
     try {
         await Course.findByIdAndUpdate(id, { name, description });
         res.status(200).json("Course updated successfully");
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const getBatchAndCourses = async (req, res) => {
+    const { studentId } = req.params;
+
+    try {
+
+        const student = await Student.findById(studentId);
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        const batch = await Batch.findById(student.batch);
+        if (!batch) {
+            return res.status(404).json({ message: "Batch not found" });
+        }
+
+        const courseIds = batch.courses;
+
+        const courses = await Course.find({ _id: { $in: courseIds } });
+        if (!courses || courses.length === 0) {
+            return res.status(404).json({ message: "Courses not found" });
+        }
+
+        res.status(200).json({ batch, courses });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
