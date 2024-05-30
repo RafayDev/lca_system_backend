@@ -61,7 +61,7 @@ export const updateCourse = async (req, res) => {
 };
 
 export const getBatchAndCourses = async (req, res) => {
-    const { studentId } = req.params;
+    const { studentId } = req.body;
 
     try {
 
