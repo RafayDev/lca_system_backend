@@ -11,6 +11,6 @@ router.post('/add',auth,addStudent);
 router.post('/update/:id',auth,updateStudent);
 router.delete('/delete/:id',auth,deleteStudent);
 router.get('/qrcode/:id',auth,getQrCode);
-router.get('/studentInfoUpdate/:id',auth,updateStudentinfo);
+router.post('/studentInfoUpdate/:id',auth,updateStudentinfo);
 
 export default router
