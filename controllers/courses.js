@@ -67,7 +67,7 @@ export const getBatchAndCourses = async (req, res) => {
 
         const student = await Student.findById(studentId);
         if (!student) {
-            return res.status(404).json({ message: "Student not found" });
+            return res.status(404).json({ message: "Student not found",student:studentId });
         }
 
         const batch = await Batch.findById(student.batch);
