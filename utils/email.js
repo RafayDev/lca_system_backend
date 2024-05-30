@@ -10,12 +10,13 @@ const transporter = nodemailer.createTransport({
 });
 
 // Function to send welcome email
-const sendWelcomeEmail = async (email, name) => {
+const sendWelcomeEmail = async (email, name, password) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
     subject: 'Welcome to Lahore CSS Academy',
-    text: `Dear ${name},\n\nWelcome to Lahore CSS Academy! We are excited to have you on board.\n\nBest regards,\nLahore CSS Academy`,
+    text: `Dear ${name},\n\nWelcome to Lahore CSS Academy! \n\nYour username is ${email} and your password is ${password} is your password. We are excited to have you on board.\n\nBest regards,\nLahore CSS Academy`,
+    
   };
 
   try {

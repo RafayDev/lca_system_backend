@@ -10,6 +10,9 @@ import QRCode from "qrcode";
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
+const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+
 export const addStudent = async (req, res) => {
   const {
     name,
@@ -36,6 +39,13 @@ export const addStudent = async (req, res) => {
 
     const total_fee = batch.total_fee;
 
+    // Generate a random password
+    const randomPassword = crypto.randomBytes(8).toString("hex"); // Generates a random 16-character password
+
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(randomPassword, saltRounds);
+
     const newStudent = new Student({
       name,
       email,
@@ -45,14 +55,15 @@ export const addStudent = async (req, res) => {
       total_fee,
       paid_fee,
       pending_fee,
+      password: hashedPassword, // Save the hashed password
     });
 
     await newStudent.save();
 
     await generateQrCode(newStudent._id);
 
-    // Send welcome email to the student
-    await sendWelcomeEmail(email, name);
+    // Send welcome email to the student with the random password
+    await sendWelcomeEmail(email, name, randomPassword);
 
     res.status(200).json("Student Added Successfully");
   } catch (error) {
