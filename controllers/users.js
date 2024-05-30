@@ -73,7 +73,7 @@ export const login = async (req, res) => {
         });
 
         // Send response with authToken and permissions
-        res.status(200).json({ authToken, permissions: permissions.map(permission => permission.name) });
+        res.status(200).json({ authToken, permissions: permissions.map(permission => permission.name), role: role.name });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
