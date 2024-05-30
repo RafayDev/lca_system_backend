@@ -1,5 +1,6 @@
 import Student from "../models/students.js";
 import Batch from "../models/batches.js";
+import User from "../models/users.js";
 import { sendWelcomeEmail } from "../utils/email.js";
 import jwt from "jsonwebtoken";
 import fs from "fs";
@@ -7,11 +8,12 @@ import { storage } from "../utils/firebase.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import dotenv from "dotenv";
 import QRCode from "qrcode";
+import bcrypt from "bcryptjs";
+import crypto from 'crypto';
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 
 export const addStudent = async (req, res) => {
   const {
@@ -45,6 +47,15 @@ export const addStudent = async (req, res) => {
     // Hash the password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(randomPassword, saltRounds);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword, // Save the hashed password
+      role: 'student', // Assign the role
+    });
+
+    await newUser.save();
 
     const newStudent = new Student({
       name,
