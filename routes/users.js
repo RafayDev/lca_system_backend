@@ -13,7 +13,7 @@ router.post('/update/:id',auth, updateUser);
 router.delete('/delete/:id',auth, deleteUser);
 router.post('/avatar', auth, changeAvatar);
 router.post('/changePassword', auth, changePassword);
-router.post('/forgotPassword', auth, forgotPassword);
+router.post('/forgotPassword', forgotPassword);
 
 
 export default router;
