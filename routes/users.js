@@ -12,7 +12,7 @@ router.post('/add',auth, addUser);
 router.post('/update/:id',auth, updateUser);
 router.delete('/delete/:id',auth, deleteUser);
 router.post('/avatar', auth, changeAvatar);
-router.post('changePassword', auth, changePassword);
+router.post('/changePassword', auth, changePassword);
 
 
 export default router;
