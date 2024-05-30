@@ -179,3 +179,38 @@ export const changeAvatar = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const changePassword = async (req, res) => {
+    const { email, currentPassword, newPassword } = req.body;
+  
+    // Validate request data
+    if (!email || !currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Email, current password, and new password are required' });
+    }
+  
+    try {
+      // Find the user by email
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Verify the current password
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Current password is incorrect' });
+      }
+  
+      // Hash the new password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+  
+      // Update the password in the database
+      user.password = hashedPassword;
+      await user.save();
+  
+      res.status(200).json({ message: 'Password changed successfully' });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
