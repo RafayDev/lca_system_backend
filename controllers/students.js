@@ -257,7 +257,6 @@ export const updateStudentinfo = async (req, res) => {
   const { id } = req.params;
   const {
     cnic,
-    admission_date,
     city,
     date_of_birth,
     father_name,
@@ -299,7 +298,6 @@ export const updateStudentinfo = async (req, res) => {
     // Update the student record
     await Student.findByIdAndUpdate(id, {
       cnic,
-      admission_date,
       city,
       date_of_birth,
       father_name,
