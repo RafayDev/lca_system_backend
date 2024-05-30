@@ -9,7 +9,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import dotenv from "dotenv";
 import QRCode from "qrcode";
 import bcrypt from "bcryptjs";
-import crypto from 'crypto';
+import crypto from "crypto";
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -52,7 +52,7 @@ export const addStudent = async (req, res) => {
       name,
       email,
       password: hashedPassword, // Save the hashed password
-      role: 'student', // Assign the role
+      role: "student", // Assign the role
     });
 
     await newUser.save();
@@ -248,6 +248,72 @@ export const getQrCode = async (req, res) => {
     await generateQrCode(student._id);
 
     res.status(200).json((await Student.findById(student._id)).qrcode);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateStudentinfo = async (req, res) => {
+  const { id } = req.params;
+  const {
+    cnic,
+    admission_date,
+    city,
+    date_of_birth,
+    father_name,
+    father_phone,
+    latest_degree,
+    university,
+    completion_year,
+    marks_cgpa,
+  } = req.body;
+  const { image, cnic_image, cnic_back_image } = req.files;
+
+  try {
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Save image to Firebase storage
+    const uploadImage = async (imageFile, path) => {
+      const fileName = `${Date.now()}_${imageFile.name}`;
+      const fileRef = ref(storage, path);
+      const uploadTask = uploadBytes(fileRef, imageFile.data);
+      await uploadTask;
+      return getDownloadURL(fileRef);
+    };
+
+    const [imagePath, cnicImagePath, cnicBackImagePath] = await Promise.all([
+      uploadImage(image, "student_images/" + `${Date.now()}_${image.name}`),
+      uploadImage(
+        cnic_image,
+        "student_cnic_images/" + `${Date.now()}_${cnic_image.name}`
+      ),
+      uploadImage(
+        cnic_back_image,
+        "student_cnic_back_images/" + `${Date.now()}_${cnic_back_image.name}`
+      ),
+    ]);
+
+    // Update the student record
+    await Student.findByIdAndUpdate(id, {
+      cnic,
+      admission_date,
+      city,
+      date_of_birth,
+      father_name,
+      father_phone,
+      latest_degree,
+      university,
+      completion_year,
+      marks_cgpa,
+      cnic_image: cnicImagePath,
+      image: imagePath,
+      cnic_back_image: cnicBackImagePath,
+    });
+
+    res.status(200).json("Student updated successfully");
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
