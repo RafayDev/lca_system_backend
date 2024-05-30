@@ -316,3 +316,43 @@ export const updateStudentinfo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const checkStudentFields = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Retrieve student by ID
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Check for empty fields
+    const fieldsToCheck = {
+      cnic: student.cnic,
+      city: student.city,
+      date_of_birth: student.date_of_birth,
+      father_name: student.father_name,
+      father_phone: student.father_phone,
+      latest_degree: student.latest_degree,
+      university: student.university,
+      completion_year: student.completion_year,
+      marks_cgpa: student.marks_cgpa,
+      image: student.image,
+      cnic_image: student.cnic_image,
+      cnic_back_image: student.cnic_back_image
+    };
+
+    const emptyFields = Object.keys(fieldsToCheck).filter(
+      (key) => !fieldsToCheck[key]
+    );
+
+    if (emptyFields.length > 0) {
+      return res.status(400).json({ message: "Empty fields found", emptyFields, check: 0 });
+    }
+
+    res.status(200).json({ message: "All fields are filled", check: 1 });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
