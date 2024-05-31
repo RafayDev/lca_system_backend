@@ -1,5 +1,5 @@
 import express from 'express';
-import {register,login,getUsers,addUser,updateUser,deleteUser,getUser,changeAvatar} from '../controllers/users.js';
+import {register,login,getUsers,addUser,updateUser,deleteUser,getUser,changeAvatar, changePassword, forgotPassword} from '../controllers/users.js';
 import auth from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -12,6 +12,8 @@ router.post('/add',auth, addUser);
 router.post('/update/:id',auth, updateUser);
 router.delete('/delete/:id',auth, deleteUser);
 router.post('/avatar', auth, changeAvatar);
+router.post('/changePassword', auth, changePassword);
+router.post('/forgotPassword', forgotPassword);
 
 
 export default router;

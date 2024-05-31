@@ -10,13 +10,13 @@ const transporter = nodemailer.createTransport({
 });
 
 // Function to send welcome email
-const sendWelcomeEmail = async (email, name, password) => {
+const sendPasswordResetEmail = async (email, password) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: 'Welcome to Lahore CSS Academy',
-    text: `Dear ${name},\n\nWelcome to Lahore CSS Academy! \n\nYour username is ${email} and your password is ${password} is your password. We are excited to have you on board.\n\nBest regards,\nLahore CSS Academy`,
-    
+    subject: 'Password Reset',
+    text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+    your account's new password is: ${password}\n\n `
   };
 
   try {
@@ -32,4 +32,4 @@ const sendWelcomeEmail = async (email, name, password) => {
   }
 };
 
-export { sendWelcomeEmail };
+export { sendPasswordResetEmail };

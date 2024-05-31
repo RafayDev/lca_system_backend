@@ -10,7 +10,7 @@ const studentSchema = mongoose.Schema({
   father_name: String,
   father_phone: String,
   latest_degree: String,
-  university_name: String,
+  university: String,
   city: String,
   completion_year: String,
   marks_cgpa: String,
