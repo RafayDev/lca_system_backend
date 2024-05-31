@@ -1,4 +1,5 @@
 import TimeTable from "../models/timeTables.js";
+import Student from "../models/students.js";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import dotenv from "dotenv";
@@ -96,6 +97,37 @@ export const deleteTimeTable = async (req, res) => {
     }
 
     res.status(200).json(deletedTimeTable);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getTimeTableByStudentId = async (req, res) => {
+  const { studentId } = req.params;
+
+  try {
+    // Find the student by ID
+    const student = await Student.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Get the batch from the student
+    const batch = student.batch;
+
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found for the student" });
+    }
+
+    // Find the timetable by batch
+    const timeTable = await TimeTable.findOne({ batch });
+
+    if (!timeTable) {
+      return res.status(404).json({ message: "Timetable entry not found for the batch" });
+    }
+
+    res.status(200).json(timeTable);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

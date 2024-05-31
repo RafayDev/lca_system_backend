@@ -1,5 +1,5 @@
 import express from "express";
-import { createTimeTable, updateTimeTable, getTimeTableById, getAllTimeTables, deleteTimeTable } from "../controllers/timeTables.js";
+import { createTimeTable, updateTimeTable, getTimeTableById, getAllTimeTables, deleteTimeTable, getTimeTableByStudentId } from "../controllers/timeTables.js";
 import auth from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -9,5 +9,6 @@ router.put('/update/:id', updateTimeTable);
 router.get('/:id', getTimeTableById);
 router.get('/', getAllTimeTables);
 router.post('/delete/:id',auth,deleteTimeTable);
+router.get('/get-time-table-by-student-id/:id', getTimeTableByStudentId);
 
 export default router
