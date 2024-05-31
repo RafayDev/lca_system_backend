@@ -76,7 +76,7 @@ export const getTimeTableById = async (req, res) => {
 
 export const getAllTimeTables = async (req, res) => {
     try {
-        const timeTables = await TimeTable.find();
+        const timeTables = await TimeTable.find().populate("batch").populate("course").populate("teacher");
 
         res.status(200).json(timeTables);
 
@@ -85,3 +85,18 @@ export const getAllTimeTables = async (req, res) => {
     }
 }
 
+export const deleteTimeTable = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedTimeTable = await TimeTable.findByIdAndDelete(id);
+
+    if (!deletedTimeTable) {
+      return res.status(404).json({ message: "Timetable entry not found" });
+    }
+
+    res.status(200).json(deletedTimeTable);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
