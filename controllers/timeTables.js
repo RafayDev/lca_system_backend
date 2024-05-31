@@ -121,7 +121,7 @@ export const getTimeTableByStudentId = async (req, res) => {
     }
 
     // Find the timetable by batch
-    const timeTable = await TimeTable.findOne({ batch });
+    const timeTable = await TimeTable.findOne({ batch }).populate("batch").populate("course").populate("teacher");
 
     if (!timeTable) {
       return res.status(404).json({ message: "Timetable entry not found for the batch" });
