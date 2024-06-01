@@ -28,8 +28,8 @@ export const createAttendence = async (req, res) => {
         }
         const timeTable = await TimeTable.findOne({
             batch: batch._id,
-            start_time: { $lte: currentTime.toDate() }, // Convert moment object to Date
-            end_time: { $gte: currentTime.toDate() },
+            start_time: { $lte: currentTime }, // Convert moment object to Date
+            end_time: { $gte: currentTime },
             day: currentDate
         });
 
