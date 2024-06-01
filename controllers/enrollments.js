@@ -26,9 +26,9 @@ export const createEnrollment = async (req, res) => {
 }
 
 export const getEntrollmentbyStudent = async (req, res) => {
-    const {student_id} = req.params;
+    const {id} = req.params;
     try{
-        const enrollment = await Enrollment.findOne({student: student_id});
+        const enrollment = await Enrollment.findOne({student: id});
         res.status(200).json(enrollment);
     }
     catch(error){
