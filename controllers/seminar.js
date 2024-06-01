@@ -50,10 +50,11 @@ export const updateSeminar = async (req, res) => {
 }
 
 export const getTodaySeminars = async (req, res) => {
-    const date = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Karachi' });
+    const today = moment().tz('Asia/Karachi').startOf('day').format('YYYY-MM-DD');
+    
     try {
-        const seminars = await Seminar.find({ date });
-        if(seminars.length > 0){
+        const seminars = await Seminar.find({ date: today });
+        if (seminars.length > 0) {
             return res.status(200).json(seminars);
         } else {
             return res.status(200).json([]);
