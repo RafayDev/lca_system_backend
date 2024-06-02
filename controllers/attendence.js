@@ -4,7 +4,7 @@ import Student from "../models/students.js";
 import Course from "../models/courses.js";
 import TimeTable from "../models/timeTables.js";
 import Enrollment from "../models/enrollments.js";
-import moment from "moment";
+import moment from "moment-timezone";
 
 export const createAttendence = async (req, res) => {
     const {student_id} = req.body;
@@ -20,9 +20,9 @@ export const createAttendence = async (req, res) => {
             return res.status(404).json({ message: "Enrollment not found" });
         }
         courses = enrollment.courses;
-        const currentDate = moment().format("YYYY-MM-DD");
+        const currentDate = moment().tz("Asia/Karachi").format("YYYY-MM-DD");
         //start time in like  16:00
-        const currentTime = moment().format("HH:mm");
+        const currentTime = moment().tz("Asia/Karachi").format("HH:mm");
         const batch = await Batch.findById(student.batch);
         if(!batch){
             return res.status(404).json({ message: "Batch not found" });
