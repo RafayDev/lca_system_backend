@@ -9,6 +9,7 @@ import moment from "moment";
 export const createAttendence = async (req, res) => {
     const {student_id} = req.body;
     try{
+        // moment.tz.setDefault('Asia/Karachi');
         const student = await Student.findById(student_id);
         var courses = [];
         if(!student){
@@ -26,6 +27,8 @@ export const createAttendence = async (req, res) => {
         if(!batch){
             return res.status(404).json({ message: "Batch not found" });
         }
+        // console.log("time",currentTime);
+        // console.log('day',currentDate);
         const timeTable = await TimeTable.findOne({
             batch: batch._id,
             start_time: { $lte: currentTime }, // Convert moment object to Date
@@ -34,7 +37,7 @@ export const createAttendence = async (req, res) => {
         });
 
         if (!timeTable) {
-            return res.status(404).json({ message: "Time table not found" });
+            return res.status(404).json({ message: "Time table not found",time:currentTime,day:currentDate });
         }
         if(courses.includes(timeTable.course)){
             const newAttendence = new Attendence({
