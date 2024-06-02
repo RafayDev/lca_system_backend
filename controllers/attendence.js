@@ -57,3 +57,16 @@ export const createAttendence = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+export const getAttendences = async (req, res) => {
+    const {course_id,batch_id,date} = req.body;
+    try{
+        const attendences = await Attendence.find({course: course_id, batch: batch_id, date: date});
+        if(!attendences){
+            return res.status(404).json({ message: "Attendence not found" });
+        }
+        res.status(200).json(attendences);
+    } catch(error){
+        res.status(500).json({ message: error.message });
+    }
+}
