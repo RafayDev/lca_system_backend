@@ -168,3 +168,14 @@ export const getTimeTableByStudentId = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllTimeTables = async (req, res) => {
+  try {
+      const timeTables = await TimeTable.find().populate("batch").populate("course").populate("teacher");
+
+      res.status(200).json(timeTables);
+
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+}
