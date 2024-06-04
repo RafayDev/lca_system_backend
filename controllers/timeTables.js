@@ -76,26 +76,29 @@ export const getTimeTableById = async (req, res) => {
 };
 export const getTodayTimeTables = async (req, res) => {
   try {
-    
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
+    const karachiTime = new Date().toLocaleString("en-PK", {
+      timeZone: "Asia/Karachi",
+    });
+    const [date, time] = karachiTime.split(", ");
+    const [day, month, year] = date.split("/");
+    const todayStart = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+    const todayEnd = new Date(`${year}-${month}-${day}T23:59:59.999Z`);
 
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
+    const timeTables = await TimeTable.find({
+      date: {
+        $gte: todayStart,
+        $lte: todayEnd,
+      },
+    })
+      .populate("batch")
+      .populate("course")
+      .populate("teacher");
 
-      const timeTables = await TimeTable.find({
-          date: {
-              $gte: todayStart,
-              $lte: todayEnd
-          }
-      }).populate("batch").populate("course").populate("teacher");
-
-      res.status(200).json(timeTables);
+    res.status(200).json(timeTables);
   } catch (error) {
-      res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
-}
-
+};
 
 export const deleteTimeTable = async (req, res) => {
   const { id } = req.params;
@@ -128,17 +131,39 @@ export const getTimeTableByStudentId = async (req, res) => {
     const batch = student.batch;
 
     if (!batch) {
-      return res.status(404).json({ message: "Batch not found for the student" });
+      return res
+        .status(404)
+        .json({ message: "Batch not found for the student" });
     }
 
-    // Find the timetable by batch
-    const timeTable = await TimeTable.findOne({ batch }).populate("batch").populate("course").populate("teacher");
+    // Get today's date in Karachi time
+    const karachiTime = new Date().toLocaleString("en-PK", {
+      timeZone: "Asia/Karachi",
+    });
+    const [date, time] = karachiTime.split(", ");
+    const [day, month, year] = date.split("/");
+    const todayStart = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+    const todayEnd = new Date(`${year}-${month}-${day}T23:59:59.999Z`);
 
-    if (!timeTable) {
-      return res.status(404).json({ message: "Timetable entry not found for the batch" });
+    // Find the timetable by batch and date
+    const timeTables = await TimeTable.find({
+      batch,
+      date: {
+        $gte: todayStart,
+        $lte: todayEnd,
+      },
+    })
+      .populate("batch")
+      .populate("course")
+      .populate("teacher");
+
+    if (!timeTables || timeTables.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No timetable entries found for today" });
     }
 
-    res.status(200).json(timeTable);
+    res.status(200).json(timeTables);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
