@@ -10,6 +10,6 @@ router.get('/:id', getTimeTableById);
 router.get('/', getAllTimeTables);
 router.post('/delete/:id',auth,deleteTimeTable);
 router.get('/get-time-table-by-student-id/:id', getTimeTableByStudentId);
-router.get('getTodayTimeTables', getTodayTimeTables);
+router.get('/getTodayTimeTables', getTodayTimeTables);
 
 export default router
