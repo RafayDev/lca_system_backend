@@ -74,17 +74,28 @@ export const getTimeTableById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const getTodayTimeTables = async (req, res) => {
+  try {
+    
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
 
-export const getAllTimeTables = async (req, res) => {
-    try {
-        const timeTables = await TimeTable.find().populate("batch").populate("course").populate("teacher");
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
 
-        res.status(200).json(timeTables);
+      const timeTables = await TimeTable.find({
+          date: {
+              $gte: todayStart,
+              $lte: todayEnd
+          }
+      }).populate("batch").populate("course").populate("teacher");
 
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+      res.status(200).json(timeTables);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
 }
+
 
 export const deleteTimeTable = async (req, res) => {
   const { id } = req.params;
