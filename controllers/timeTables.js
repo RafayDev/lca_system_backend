@@ -74,31 +74,31 @@ export const getTimeTableById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-export const getTodayTimeTables = async (req, res) => {
-  try {
-    const karachiTime = new Date().toLocaleString("en-PK", {
-      timeZone: "Asia/Karachi",
-    });
-    const [date, time] = karachiTime.split(", ");
-    const [day, month, year] = date.split("/");
-    const todayStart = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
-    const todayEnd = new Date(`${year}-${month}-${day}T23:59:59.999Z`);
+  export const getTodayTimeTables = async (req, res) => {
+    try {
+      const karachiTime = new Date().toLocaleString("en-PK", {
+        timeZone: "Asia/Karachi",
+      });
+      const [date, time] = karachiTime.split(", ");
+      const [day, month, year] = date.split("/");
+      const todayStart = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+      const todayEnd = new Date(`${year}-${month}-${day}T23:59:59.999Z`);
 
-    const timeTables = await TimeTable.find({
-      date: {
-        $gte: todayStart,
-        $lte: todayEnd,
-      },
-    })
-      .populate("batch")
-      .populate("course")
-      .populate("teacher");
+      const timeTables = await TimeTable.find({
+        date: {
+          $gte: todayStart,
+          $lte: todayEnd,
+        },
+      })
+        .populate("batch")
+        .populate("course")
+        .populate("teacher");
 
-    res.status(200).json(timeTables);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+      res.status(200).json(timeTables);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
 
 export const deleteTimeTable = async (req, res) => {
   const { id } = req.params;
