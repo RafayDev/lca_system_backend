@@ -5,6 +5,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import { storage } from "../utils/firebase.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import moment from "moment-timezone";
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -76,19 +77,9 @@ export const getTimeTableById = async (req, res) => {
 };
   export const getTodayTimeTables = async (req, res) => {
     try {
-      const karachiTime = new Date().toLocaleString("en-PK", {
-        timeZone: "Asia/Karachi",
-      });
-      const [date, time] = karachiTime.split(", ");
-      const [day, month, year] = date.split("/");
-      const todayStart = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
-      const todayEnd = new Date(`${year}-${month}-${day}T23:59:59.999Z`);
-
-      const timeTables = await TimeTable.find({
-        date: {
-          $gte: todayStart,
-          $lte: todayEnd,
-        },
+      const currentDate = moment().tz("Asia/Karachi").format("YYYY-MM-DD");
+            const timeTables = await TimeTable.find({
+              day: currentDate,
       })
         .populate("batch")
         .populate("course")
@@ -120,14 +111,12 @@ export const getTimeTableByStudentId = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Find the student by ID
     const student = await Student.findById(id);
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // Get the batch from the student
     const batch = student.batch;
 
     if (!batch) {
@@ -136,22 +125,11 @@ export const getTimeTableByStudentId = async (req, res) => {
         .json({ message: "Batch not found for the student" });
     }
 
-    // Get today's date in Karachi time
-    const karachiTime = new Date().toLocaleString("en-PK", {
-      timeZone: "Asia/Karachi",
-    });
-    const [date, time] = karachiTime.split(", ");
-    const [day, month, year] = date.split("/");
-    const todayStart = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
-    const todayEnd = new Date(`${year}-${month}-${day}T23:59:59.999Z`);
-
+    const currentDate = moment().tz("Asia/Karachi").format("YYYY-MM-DD");
     // Find the timetable by batch and date
     const timeTables = await TimeTable.find({
       batch,
-      date: {
-        $gte: todayStart,
-        $lte: todayEnd,
-      },
+      day: currentDate,
     })
       .populate("batch")
       .populate("course")
