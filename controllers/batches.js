@@ -2,7 +2,7 @@ import Batch from "../models/batches.js";
 
 export const getBatches = async (req, res) => {
     try {
-        const batches = await Batch.find()
+        const batches = await Batch.find().populate("courses").populate("teachers");
         res.status(200).json(batches);
     } catch (error) {
         res.status(500).json({ message: error.message });

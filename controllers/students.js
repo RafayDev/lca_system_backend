@@ -84,7 +84,7 @@ export const addStudent = async (req, res) => {
 
 export const getStudents = async (req, res) => {
   try {
-    const students = await Student.find();
+    const students = await Student.find().populate("batch");
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ message: error.message });

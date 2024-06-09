@@ -61,11 +61,20 @@ export const createAttendence = async (req, res) => {
 export const getAttendences = async (req, res) => {
     const {course_id,batch_id,date} = req.body;
     try{
-        const attendences = await Attendence.find({course: course_id, batch: batch_id, day: date});
-        if(!attendences){
-            return res.status(404).json({ message: "Attendence not found" });
+        let attendances = [];
+
+        if(course_id && batch_id && date){
+            attendances = await Attendence.find({course: course_id,batch: batch_id,date: date}).populate("student").populate("course").populate("batch").exec();
+        } else if (course_id && batch_id && !date) {
+            attendances = await Attendence.find({ course: course_id, batch: batch_id }).populate("student").populate("course").populate("batch").exec();
+        } else if (!course_id && !batch_id && date) {
+            attendances = await Attendence.find({ date: date }).populate("student").populate("course").populate("batch").exec();
+        } else {
+            attendances = await Attendence.find().populate("student").populate("course").populate("batch").exec();
         }
-        res.status(200).json(attendences);
+
+        res.status(200).json(attendances);
+
     } catch(error){
         res.status(500).json({ message: error.message });
     }
