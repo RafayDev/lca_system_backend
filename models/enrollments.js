@@ -15,6 +15,11 @@ const enrollmentSchema = mongoose.Schema({
       ref: "Course",
     },
   ],
+  fees: [
+    {
+      type: Number,
+    },
+  ],
 });
 const Enrollment = mongoose.model("Enrollment", enrollmentSchema);
 

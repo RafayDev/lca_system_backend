@@ -29,9 +29,9 @@ export const getCourse = async (req, res) => {
 };
 
 export const addCourse = async (req, res) => {
-    const { name, description } = req.body;
+    const { name, description, fee } = req.body;
     try {
-        const newCourse = new Course({ name, description });
+        const newCourse = new Course({ name, description, fee });
         await newCourse.save();
         res.status(200).json("Course added successfully");
     } catch (error) {
@@ -51,9 +51,9 @@ export const deleteCourse = async (req, res) => {
 
 export const updateCourse = async (req, res) => {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const { name, description, fee } = req.body;
     try {
-        await Course.findByIdAndUpdate(id, { name, description });
+        await Course.findByIdAndUpdate(id, { name, description, fee });
         res.status(200).json("Course updated successfully");
     } catch (error) {
         res.status(500).json({ message: error.message });
