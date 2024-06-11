@@ -22,9 +22,18 @@ const studentSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Batch",
   },
-  paid_fee: Number,
-  pending_fee: Number,
-  total_fee: Number,
+  paid_fee: {
+    type: Number,
+    default: 0,
+  },
+  pending_fee: {
+    type: Number,
+    default: 0,
+  },
+  total_fee: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Student = mongoose.model("Student", studentSchema);

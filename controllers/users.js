@@ -91,7 +91,8 @@ export const login = async (req, res) => {
 
 export const getUsers = async (req, res) => {
     try {
-        const users = await User.find();
+        const rolesToExclude = ["student", "secrateadmin"];
+        const users = await User.find({ role: { $nin: rolesToExclude } });
         res.status(200).json(users);
     }
     catch (error) {

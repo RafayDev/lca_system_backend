@@ -1,4 +1,5 @@
 import Enrollment from "../models/enrollments.js";
+import Student from "../models/students.js";
 
 export const getEnrollments = async (req, res) => {
   try {
@@ -12,8 +13,13 @@ export const getEnrollments = async (req, res) => {
 export const createEnrollment = async (req, res) => {
   const { student_id, enrollments } = req.body;
   try {
+    let total_fee = 0;
     for (const enrollment of enrollments) {
       const { batch, courses, fees } = enrollment;
+
+      for (let i = 0; i < courses.length; i++) {
+        total_fee += fees[i];
+      }
 
       await Enrollment.updateOne(
         { student: student_id, batch },
@@ -26,6 +32,19 @@ export const createEnrollment = async (req, res) => {
         { upsert: true }
       );
     }
+
+    const student = await Student.findById(student_id);
+
+    await Student.updateOne(
+      { _id: student_id },
+      {
+        $set: {
+          total_fee,
+          pending_fee: total_fee - student.paid_fee || 0,
+          paid_fee: student.paid_fee || 0,
+        },
+      }
+    );
 
     res.status(201).json({ message: "Enrollment created successfully" });
   } catch (error) {

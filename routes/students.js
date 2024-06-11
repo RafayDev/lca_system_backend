@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStudent, getStudents, addStudent, updateStudent, deleteStudent, getQrCode, updateStudentinfo, checkStudentFields } from '../controllers/students.js';
+import { getStudent, getStudents, addStudent, updateStudent, deleteStudent, getQrCode, updateStudentinfo, checkStudentFields, basicStudentUpdate } from '../controllers/students.js';
 import auth from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -13,6 +13,7 @@ router.delete('/delete/:id',auth,deleteStudent);
 router.get('/qrcode/:id',auth,getQrCode);
 router.post('/studentInfoUpdate/:id',auth,updateStudentinfo);
 router.get('/checkStudentFields/:id',auth,checkStudentFields);
+router.post('/basic-update/:id',auth,basicStudentUpdate);
 
 
 export default router

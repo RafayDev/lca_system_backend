@@ -16,14 +16,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // const crypto = require("crypto");
 
 export const addStudent = async (req, res) => {
-  const {
-    name,
-    email,
-    phone,
-    batch: batchId,
-    paid_fee,
-    pending_fee,
-  } = req.body;
+  const { name, email, phone } = req.body;
 
   const admission_date = req.body.admission_date || new Date();
 
@@ -34,19 +27,16 @@ export const addStudent = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const batch = await Batch.findById(batchId);
-    if (!batch) {
-      return res.status(400).json({ message: "Invalid batch provided" });
-    }
-
-    const total_fee = batch.total_fee;
-
     // Generate a random password
     const randomPassword = crypto.randomBytes(8).toString("hex"); // Generates a random 16-character password
 
     // Hash the password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(randomPassword, saltRounds);
+
+    if (await User.findOne({ email })) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
 
     const newUser = new User({
       name,
@@ -61,11 +51,10 @@ export const addStudent = async (req, res) => {
       name,
       email,
       phone,
-      batch: batchId,
       admission_date,
-      total_fee,
-      paid_fee,
-      pending_fee,
+      total_fee: 0,
+      paid_fee: 0,
+      pending_fee: 0,
       password: hashedPassword, // Save the hashed password
     });
 
@@ -340,7 +329,7 @@ export const checkStudentFields = async (req, res) => {
       marks_cgpa: student.marks_cgpa,
       image: student.image,
       cnic_image: student.cnic_image,
-      cnic_back_image: student.cnic_back_image
+      cnic_back_image: student.cnic_back_image,
     };
 
     const emptyFields = Object.keys(fieldsToCheck).filter(
@@ -348,10 +337,35 @@ export const checkStudentFields = async (req, res) => {
     );
 
     if (emptyFields.length > 0) {
-      return res.status(400).json({ message: "Empty fields found", emptyFields, check: 0 });
+      return res
+        .status(400)
+        .json({ message: "Empty fields found", emptyFields, check: 0 });
     }
 
     res.status(200).json({ message: "All fields are filled", check: 1 });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const basicStudentUpdate = async (req, res) => {
+  const { id } = req.params;
+  const { name, phone, paid_fee } = req.body;
+
+  try {
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    await Student.findByIdAndUpdate(id, {
+      name,
+      phone,
+      paid_fee,
+      pending_fee: student.total_fee > paid_fee ? student.total_fee - paid_fee : 0,
+    });
+
+    res.status(200).json("Student updated successfully");
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
