@@ -1,7 +1,7 @@
 import Student from "../models/students.js";
 import Batch from "../models/batches.js";
 import User from "../models/users.js";
-import { sendWelcomeEmail } from "../utils/email.js";
+import { addEmailToQueue } from "../utils/emailQueue.js";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import { storage } from "../utils/firebase.js";
@@ -63,7 +63,7 @@ export const addStudent = async (req, res) => {
     await generateQrCode(newStudent._id);
 
     // Send welcome email to the student with the random password
-    await sendWelcomeEmail(email, name, randomPassword);
+    await addEmailToQueue(email, name, randomPassword);
 
     res.status(200).json("Student Added Successfully");
   } catch (error) {
