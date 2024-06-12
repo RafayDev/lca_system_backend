@@ -20,7 +20,7 @@ export const createEnrollment = async (req, res) => {
     for (const enrollment of enrollments) {
       const { batch, courses, fees } = enrollment;
 
-      for (let i = 0; i < courses.length; i++) {
+      for (let i = 0; i < fees.length; i++) {
         total_fee += parseInt(fees[i]);
       }
 
