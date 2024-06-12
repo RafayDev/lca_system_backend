@@ -11,7 +11,7 @@ import Role from '../models/roles.js';
 import Permission from '../models/permissions.js';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../utils/firebase.js";
-import { sendPasswordResetEmail } from "../utils/sendPasswordResetEmail.js";
+import { addResetPasswordEmailToQueue } from "../utils/emailQueue.js";
 
 export const register = async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -254,7 +254,7 @@ export const changePassword = async (req, res) => {
   
       await user.save();
   
-      await sendPasswordResetEmail(email, resetToken);
+      await addResetPasswordEmailToQueue(email, resetToken);
   
       res.status(200).json({ message: 'Password reset token sent to email' });
     } catch (error) {
