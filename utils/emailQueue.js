@@ -13,9 +13,9 @@ const emailQueue = async.queue(async (task, callback) => {
 }, 1); // Set concurrency to 1 to process one email at a time
 
 const resetPasswordEmailQueue = async.queue(async (task, callback) => {
-  const { email,restToken } = task;
+  const { email,resetToken } = task;
   try {
-    await sendPasswordResetEmail(email,restToken);
+    await sendPasswordResetEmail(email,resetToken);
     callback();
   } catch (error) {
     callback(error);
@@ -31,8 +31,8 @@ export const addEmailToQueue = (email, name, randomPassword) => {
   });
 };
 
-export const addResetPasswordEmailToQueue = (email,restToken) => {
-  resetPasswordEmailQueue.push({ email,restToken  }, (err) => {
+export const addResetPasswordEmailToQueue = (email,resetToken) => {
+  resetPasswordEmailQueue.push({ email,resetToken  }, (err) => {
     if (err) {
       console.error('Failed to send email:', err);
     } else {
