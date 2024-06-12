@@ -60,7 +60,10 @@ export const createAttendence = async (req, res) => {
 
 export const getAttendences = async (req, res) => {
     const {course_id,batch_id,date} = req.body;
+    const { query } = req.query;
     try{
+        const searchQuery = query ? query : "";
+
         let attendances = [];
 
         if(course_id && batch_id && date){

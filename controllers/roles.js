@@ -5,8 +5,16 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export const getRoles = async (req, res) => {
+    const { query } = req.query;
     try {
-        const roles = await Role.find({ name: { $ne: "secrateadmin" } });
+        const searchQuery = query ? query : "";
+        const roles = await Role.find({ 
+            $or: [
+                { name: { $regex: searchQuery, $options: "i" } },
+                { description: { $regex: searchQuery, $options: "i" } },
+            ],
+            name: { $ne: "secrateadmin" } 
+        });
         res.status(200).json(roles);
     } catch (error) {
         res.status(500).json({ message: error.message });

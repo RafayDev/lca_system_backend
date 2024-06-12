@@ -7,8 +7,15 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export const getCourses = async (req, res) => {
+    const { query } = req.query;
     try {
-        const courses = await Course.find();
+        const searchQuery = query ? query : "";
+        const courses = await Course.find({
+            $or: [
+                { name: { $regex: searchQuery, $options: "i" } },
+                { description: { $regex: searchQuery, $options: "i" } },
+            ],
+        });
         res.status(200).json(courses);
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -10,14 +10,23 @@ export const addSeminar = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
 export const getSeminars = async (req, res) => {
+    const { query } = req.query;
     try {
-        const seminars = await Seminar.find();
+        const searchQuery = query ? query : "";
+        const seminars = await Seminar.find({
+            $or: [
+                { name: { $regex: searchQuery, $options: "i" } },
+                { description: { $regex: searchQuery, $options: "i" } },
+            ],
+        });
         res.status(200).json(seminars);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
+
 export const getSeminar = async (req, res) => {
     const { id } = req.params;
     try {

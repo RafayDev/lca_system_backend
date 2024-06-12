@@ -72,8 +72,16 @@ export const addStudent = async (req, res) => {
 };
 
 export const getStudents = async (req, res) => {
+  const { query } = req.query;
   try {
-    const students = await Student.find().populate("batch");
+    const searchQuery = query ? query : "";
+    const students = await Student.find({
+      $or: [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { email: { $regex: searchQuery, $options: "i" } },
+        { phone: { $regex: searchQuery, $options: "i" } },
+      ],
+    }).populate("batch");
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ message: error.message });

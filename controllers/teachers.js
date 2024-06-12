@@ -47,8 +47,16 @@ export const addTeacher = async (req, res) => {
 };
 
 export const getTeachers = async (req, res) => {
+  const { query } = req.query;
   try {
-    const teachers = await Teacher.find();
+    const searchQuery = query ? query : "";
+    const teachers = await Teacher.find({
+      $or: [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { email: { $regex: searchQuery, $options: "i" } },
+        { phone: { $regex: searchQuery, $options: "i" } },
+      ],
+    });
     res.status(200).json(teachers);
   } catch (error) {
     res.status(500).json({ message: error.message });

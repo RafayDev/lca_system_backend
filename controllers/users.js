@@ -90,9 +90,17 @@ export const login = async (req, res) => {
 };
 
 export const getUsers = async (req, res) => {
+    const { query } = req.query;
     try {
+        let searchQuery = query ? query : "";
         const rolesToExclude = ["student", "secrateadmin"];
-        const users = await User.find({ role: { $nin: rolesToExclude } });
+        const users = await User.find({ 
+            $or: [
+                { name: { $regex: searchQuery, $options: "i" } },
+                { email: { $regex: searchQuery, $options: "i" } }
+            ],
+            role: { $nin: rolesToExclude } 
+        });
         res.status(200).json(users);
     }
     catch (error) {

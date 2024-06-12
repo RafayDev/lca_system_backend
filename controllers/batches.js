@@ -1,8 +1,16 @@
 import Batch from "../models/batches.js";
 
 export const getBatches = async (req, res) => {
+    const { query } = req.query;
     try {
-        const batches = await Batch.find().populate("courses").populate("teachers");
+        const searchQuery = query ? query : "";
+        const batches = await Batch.find({
+            $or: [
+                { name: { $regex: searchQuery, $options: "i" } },
+                { description: { $regex: searchQuery, $options: "i" } },
+                { batch_type: { $regex: searchQuery, $options: "i" } },
+            ],
+        }).populate("courses").populate("teachers");
         res.status(200).json(batches);
     } catch (error) {
         res.status(500).json({ message: error.message });
