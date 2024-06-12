@@ -20,14 +20,14 @@ export const createEnrollment = async (req, res) => {
     for (const enrollment of enrollments) {
       const { batch, courses, fees } = enrollment;
 
-      for (let i = 0; i < courses.length; i++) {
+      for (let i = 0; i < fees.length; i++) {
         total_fee += parseInt(fees[i]);
       }
 
       const start_date = batch.start_date;
       const end_date = batch.end_date;
 
-      if (!activeBatch && moment().isBetween(start_date, end_date)) {
+      if (!activeBatch && moment().isBetween(start_date, end_date) && courses.length > 0) {
         activeBatch = batch;
       }
 
@@ -41,10 +41,6 @@ export const createEnrollment = async (req, res) => {
         },
         { upsert: true }
       );
-    }
-
-    if (!activeBatch) {
-      activeBatch = enrollments[0].batch;
     }
 
     const student = await Student.findById(student_id);
