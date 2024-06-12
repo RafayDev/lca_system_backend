@@ -1,5 +1,6 @@
 import Enrollment from "../models/enrollments.js";
 import Student from "../models/students.js";
+import moment from "moment";
 
 export const getEnrollments = async (req, res) => {
   try {
@@ -14,23 +15,36 @@ export const createEnrollment = async (req, res) => {
   const { student_id, enrollments } = req.body;
   try {
     let total_fee = 0;
+    let activeBatch = null;
+
     for (const enrollment of enrollments) {
       const { batch, courses, fees } = enrollment;
 
       for (let i = 0; i < courses.length; i++) {
-        total_fee += fees[i];
+        total_fee += parseInt(fees[i]);
+      }
+
+      const start_date = batch.start_date;
+      const end_date = batch.end_date;
+
+      if (!activeBatch && moment().isBetween(start_date, end_date)) {
+        activeBatch = batch;
       }
 
       await Enrollment.updateOne(
         { student: student_id, batch },
         {
-            $set: {
-                courses,
-                fees,
-            },
+          $set: {
+            courses,
+            fees,
+          },
         },
         { upsert: true }
       );
+    }
+
+    if (!activeBatch) {
+      activeBatch = enrollments[0].batch;
     }
 
     const student = await Student.findById(student_id);
@@ -40,8 +54,9 @@ export const createEnrollment = async (req, res) => {
       {
         $set: {
           total_fee,
-          pending_fee: total_fee - student.paid_fee || 0,
-          paid_fee: student.paid_fee || 0,
+          pending_fee: total_fee - parseInt(student.paid_fee) || 0,
+          paid_fee: parseInt(student.paid_fee) || 0,
+          batch: activeBatch,
         },
       }
     );
