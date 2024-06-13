@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const studentSchema = mongoose.Schema({
   name: String,
@@ -35,6 +36,8 @@ const studentSchema = mongoose.Schema({
     default: 0,
   },
 });
+
+studentSchema.plugin(mongoosePaginate);
 
 const Student = mongoose.model("Student", studentSchema);
 export default Student;

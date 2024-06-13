@@ -1,15 +1,18 @@
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const roleSchema = mongoose.Schema({
-    name: String,
-    description: String,
-    permissions:[
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Permission"
-        }
-      ],
-    });
-const Role = mongoose.model('Role', roleSchema);
+  name: String,
+  description: String,
+  permissions: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Permission",
+    },
+  ],
+});
+
+roleSchema.plugin(mongoosePaginate);
+
+const Role = mongoose.model("Role", roleSchema);
 export default Role;

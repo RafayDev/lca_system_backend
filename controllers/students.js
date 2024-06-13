@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import fs from "fs";
 import { storage } from "../utils/firebase.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import dotenv from "dotenv";
+import dotenv, { populate } from "dotenv";
 import QRCode from "qrcode";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -75,13 +75,20 @@ export const getStudents = async (req, res) => {
   const { query } = req.query;
   try {
     const searchQuery = query ? query : "";
-    const students = await Student.find({
-      $or: [
-        { name: { $regex: searchQuery, $options: "i" } },
-        { email: { $regex: searchQuery, $options: "i" } },
-        { phone: { $regex: searchQuery, $options: "i" } },
-      ],
-    }).populate("batch");
+    const students = await Student.paginate(
+      {
+        $or: [
+          { name: { $regex: searchQuery, $options: "i" } },
+          { email: { $regex: searchQuery, $options: "i" } },
+          { phone: { $regex: searchQuery, $options: "i" } },
+        ],
+      },
+      {
+        page: parseInt(req.query.page),
+        limit: parseInt(req.query.limit),
+        populate: ["batch"],
+      }
+    );
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -372,8 +379,14 @@ export const basicStudentUpdate = async (req, res) => {
     await Student.findByIdAndUpdate(id, {
       name,
       phone,
+<<<<<<< HEAD
       paid_fee: newPaidFee,
       pending_fee: pendingFee,
+=======
+      paid_fee,
+      pending_fee:
+        student.total_fee > paid_fee ? student.total_fee - paid_fee : 0,
+>>>>>>> restructure
     });
 
     res.status(200).json("Student updated successfully");

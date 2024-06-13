@@ -8,12 +8,18 @@ export const getPermissions = async (req, res) => {
   const { query } = req.query;
   try {
     const searchQuery = query ? query : "";
-    const permissions = await Permission.find({
-      $or: [
-        { name: { $regex: searchQuery, $options: "i" } },
-        { description: { $regex: searchQuery, $options: "i" } },
-    ],
-    });
+    const permissions = await Permission.paginate(
+      {
+        $or: [
+          { name: { $regex: searchQuery, $options: "i" } },
+          { description: { $regex: searchQuery, $options: "i" } },
+        ],
+      },
+      {
+        page: parseInt(req.query.page),
+        limit: parseInt(req.query.limit),
+      }
+    );
     res.status(200).json(permissions);
   } catch (error) {
     res.status(500).json({ message: error.message });
