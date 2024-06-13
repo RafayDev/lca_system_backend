@@ -366,11 +366,14 @@ export const basicStudentUpdate = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
+    const newPaidFee = student.paid_fee + paid_fee;
+    const pendingFee = student.total_fee > newPaidFee ? student.total_fee - newPaidFee : 0;
+
     await Student.findByIdAndUpdate(id, {
       name,
       phone,
-      paid_fee,
-      pending_fee: student.total_fee > paid_fee ? student.total_fee - paid_fee : 0,
+      paid_fee: newPaidFee,
+      pending_fee: pendingFee,
     });
 
     res.status(200).json("Student updated successfully");
