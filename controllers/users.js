@@ -226,34 +226,6 @@ export const changeAvatar = async (req, res) => {
 export const changePassword = async (req, res) => {
   const { email, currentPassword, newPassword } = req.body;
 
-<<<<<<< HEAD
-  export const forgotPassword = async (req, res) => {
-    const { email } = req.body;
-  
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
-    }
-  
-    try {
-        
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      const resetToken = crypto.randomBytes(10).toString('hex');
-  
-      user.resetPasswordToken = resetToken;
-      user.resetPasswordExpires = Date.now() + 3600000;
-  
-      await user.save();
-  
-      await addResetPasswordEmailToQueue(email, resetToken);
-  
-      res.status(200).json({ message: 'Password reset token sent to email' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-=======
   // Validate request data
   if (!email || !currentPassword || !newPassword) {
     return res
@@ -268,7 +240,6 @@ export const changePassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
->>>>>>> restructure
     }
 
     // Verify the current password

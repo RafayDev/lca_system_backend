@@ -379,14 +379,8 @@ export const basicStudentUpdate = async (req, res) => {
     await Student.findByIdAndUpdate(id, {
       name,
       phone,
-<<<<<<< HEAD
       paid_fee: newPaidFee,
       pending_fee: pendingFee,
-=======
-      paid_fee,
-      pending_fee:
-        student.total_fee > paid_fee ? student.total_fee - paid_fee : 0,
->>>>>>> restructure
     });
 
     res.status(200).json("Student updated successfully");
