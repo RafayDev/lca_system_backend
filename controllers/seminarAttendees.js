@@ -2,14 +2,7 @@ import Attendee from "../models/seminarAttendees.js";
 
 export const getAttendees = async (req, res) => {
   try {
-    const attendees = await Attendee.paginate(
-      {},
-      {
-        page: parseInt(req.query.page),
-        limit: parseInt(req.query.limit),
-        populate: ["seminar"],
-      }
-    );
+    const attendees = await Attendee.find().populate("seminar");
     res.status(200).json(attendees);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -77,7 +70,11 @@ export const deleteAttendee = async (req, res) => {
 export const getAttendeesBySeminar = async (req, res) => {
   const { id } = req.params;
   try {
-    const attendees = await Attendee.find({ seminar: id }).populate("seminar");
+    const attendees = await Attendee.paginate({ seminar: id }, {
+      page: parseInt(req.query.page),
+      limit: parseInt(req.query.limit),
+      populate: ["seminar"],
+    });
     res.status(200).json(attendees);
   } catch (error) {
     res.status(500).json({ message: error.message });
