@@ -51,10 +51,8 @@ export const getStatistics = async (req, res) => {
         },
       },
     ]);
-    const total_fee_recovered =
-      total_fee_recovered_result.length > 0
-        ? total_fee_recovered_result[0].totalFeeRecovered
-        : 0;
+    
+    const total_fee_recovered = total_fee_record - total_fee_pending;
 
     const total_fee_pending = total_fee_record - total_fee_recovered;
 
