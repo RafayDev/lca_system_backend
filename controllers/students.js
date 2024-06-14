@@ -112,6 +112,7 @@ export const deleteStudent = async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
+    await User.findOneAndDelete({ email: student.email });
     await Student.findByIdAndDelete(id);
     res.status(200).json("student deleted successfully");
   } catch (error) {
