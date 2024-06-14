@@ -103,6 +103,71 @@ export const login = async (req, res) => {
   }
 };
 
+export const adminlogin = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    // Find the user by email
+    const user = await User.findOne({ $and: [{ email }, { role: { $ne: "student" } }] });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Check if the password is correct
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Fetch the role associated with the user
+    const role = await Role.findOne({ name: user.role });
+
+    if (!role) {
+      return res.status(500).json({ message: "Role not found" });
+    }
+
+    // Fetch the permissions associated with the role
+    const permissions = await Permission.find({
+      _id: { $in: role.permissions },
+    });
+
+    // Create a JWT token with user ID and role
+    const data = {
+      user: {
+        id: user._id,
+        role: role.name,
+        permissions: permissions.map((permission) => permission.name),
+      },
+    };
+    const authToken = jwt.sign(data, JWT_SECRET);
+
+    // Set token in cookies
+    res.cookie("authToken", authToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    let studentId;
+    if (role.name === "student") {
+      const student = await Student.findOne({ email: user.email });
+      if (student) {
+        studentId = student.id;
+      }
+    }
+
+    res
+      .status(200)
+      .json({
+        authToken,
+        permissions: permissions.map((permission) => permission.name),
+        role: role.name,
+        studentId,
+      });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getUsers = async (req, res) => {
   const { query } = req.query;
   try {
