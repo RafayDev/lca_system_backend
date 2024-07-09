@@ -4,7 +4,7 @@ import auth from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.post("/", auth, getAttendences);
+router.get("/", auth, getAttendences);
 router.post("/create", auth, createAttendence);
 
 
