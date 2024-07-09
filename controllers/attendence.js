@@ -95,22 +95,25 @@ export const getAttendences = async (req, res) => {
     if (batch_id) filter.batch = batch_id;
     if (date) filter.date = date;
 
-    const attendences = await Attendence.find(filter)
-      .populate("course")
-      .populate("batch")
-      .populate({
-        path: "student",
-        match: {
-          name: { $regex: searchQuery, $options: "i" },
+    const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      populate: [
+        { path: 'course' },
+        { path: 'batch' },
+        {
+          path: 'student',
+          match: {
+            name: { $regex: searchQuery, $options: "i" },
+          },
         },
-      })
-      .then((attendances) => {
-        // Filter out attendances where student is null (didn't match the regex)
-        const filteredAttendances = attendances.filter(
-          (a) => a.student != null
-        );
-        return filteredAttendances;
-      });
+      ],
+    };
+
+    const attendences = await Attendence.paginate(filter, options);
+
+    // Filter out attendances where student is null (didn't match the regex)
+    attendences.docs = attendences.docs.filter(a => a.student != null);
 
     res.status(200).json(attendences);
   } catch (error) {
