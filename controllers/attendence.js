@@ -89,7 +89,7 @@ export const getAttendences = async (req, res) => {
   const { query, course_id, batch_id, date } = req.query;
   try {
     const searchQuery = query ? query : "";
-    
+
     const filter = {};
     if (course_id) filter.course = course_id;
     if (batch_id) filter.batch = batch_id;
@@ -99,10 +99,10 @@ export const getAttendences = async (req, res) => {
       page: parseInt(req.query.page, 10) || 1,
       limit: parseInt(req.query.limit, 10) || 10,
       populate: [
-        { path: 'course' },
-        { path: 'batch' },
+        { path: "course" },
+        { path: "batch" },
         {
-          path: 'student',
+          path: "student",
           match: {
             name: { $regex: searchQuery, $options: "i" },
           },
@@ -113,7 +113,7 @@ export const getAttendences = async (req, res) => {
     const attendences = await Attendence.paginate(filter, options);
 
     // Filter out attendances where student is null (didn't match the regex)
-    attendences.docs = attendences.docs.filter(a => a.student != null);
+    attendences.docs = attendences.docs.filter((a) => a.student != null);
 
     res.status(200).json(attendences);
   } catch (error) {
@@ -121,57 +121,38 @@ export const getAttendences = async (req, res) => {
   }
 };
 
-
 export const getAttendanceByStudentId = async (req, res) => {
-  const { student_id } = req.body;
+  const { student_id } = req.query;
   try {
-    const attendance = await Attendence.aggregate([
-      {
-        $match: { student: student_id },
-      },
-      {
-        $lookup: {
-          from: "courses",
-          localField: "course",
-          foreignField: "_id",
-          as: "course",
-        },
-      },
-      {
-        $unwind: "$course",
-      },
-      {
-        $group: {
-          _id: "$student",
-          courses: {
-            $push: {
-              course: "$course",
-              present: {
-                $size: {
-                  $filter: {
-                    input: "$$ROOT.attendances",
-                    as: "attendance",
-                    cond: { $eq: ["$$attendance.course", "$$this._id"] },
-                  },
-                },
-              },
-              absent: {
-                $size: {
-                  $size: {
-                    $filter: {
-                      input: "$$ROOT.attendances",
-                      as: "attendance",
-                      cond: { $ne: ["$$attendance.course", "$$this._id"] },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-    res.status(200).json(attendance);
+    // First, get enrollment data based on student_id
+    const enrollments = await Enrollment.find({ student: student_id }).populate(
+      "course"
+    );
+
+    if (!enrollments.length) {
+      return res
+        .status(404)
+        .json({ message: "No enrollments found for this student." });
+    }
+
+    // Create a map to store attendance status for each course
+    const attendanceMap = {};
+
+    for (const enrollment of enrollments) {
+      const attendance = await Attendance.find({
+        student: student_id,
+        course: enrollment.course._id,
+      });
+
+      attendanceMap[enrollment.course._id] = {
+        course: enrollment.course,
+        status: attendance.length ? "Present" : "Absent",
+      };
+    }
+
+    const attendanceData = Object.values(attendanceMap);
+
+    res.status(200).json(attendanceData);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
