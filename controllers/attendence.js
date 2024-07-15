@@ -120,3 +120,59 @@ export const getAttendences = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getAttendanceByStudentId = async (req, res) => {
+  const { student_id } = req.body;
+  try {
+    const attendance = await Attendence.aggregate([
+      {
+        $match: { student: student_id },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      {
+        $unwind: "$course",
+      },
+      {
+        $group: {
+          _id: "$student",
+          courses: {
+            $push: {
+              course: "$course",
+              present: {
+                $size: {
+                  $filter: {
+                    input: "$$ROOT.attendances",
+                    as: "attendance",
+                    cond: { $eq: ["$$attendance.course", "$$this._id"] },
+                  },
+                },
+              },
+              absent: {
+                $size: {
+                  $size: {
+                    $filter: {
+                      input: "$$ROOT.attendances",
+                      as: "attendance",
+                      cond: { $ne: ["$$attendance.course", "$$this._id"] },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+    res.status(200).json(attendance);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
