@@ -122,7 +122,7 @@ export const getAttendences = async (req, res) => {
 };
 
 export const getAttendanceByStudentId = async (req, res) => {
-  const { student_id } = req.query;
+  const { student_id } = req.body;
   try {
     // First, get enrollment data based on student_id
     const enrollments = await Enrollment.find({ student: student_id }).populate(
