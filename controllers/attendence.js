@@ -122,12 +122,10 @@ export const getAttendences = async (req, res) => {
 };
 
 export const getAttendanceByStudentId = async (req, res) => {
-  const { student_id } = req.body;
+  const { student_id } = req.params;
   try {
     // First, get enrollment data based on student_id
-    const enrollments = await Enrollment.find({ student: student_id }).populate(
-      "course"
-    );
+    const enrollments = await Enrollment.find({ student: student_id }).populate('courses');
 
     if (!enrollments.length) {
       return res
@@ -139,9 +137,9 @@ export const getAttendanceByStudentId = async (req, res) => {
     const attendanceMap = {};
 
     for (const enrollment of enrollments) {
-      const attendance = await Attendance.find({
+      const attendance = await Attendence.find({
         student: student_id,
-        course: enrollment.course._id,
+        course: enrollment.courses._id,
       });
 
       attendanceMap[enrollment.course._id] = {
@@ -153,6 +151,19 @@ export const getAttendanceByStudentId = async (req, res) => {
     const attendanceData = Object.values(attendanceMap);
 
     res.status(200).json(attendanceData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getTodayAttendenceByStudentId = async (req, res) => {
+  const { student_id } = req.params;
+  try {
+    const attendence = await Attendence.find({
+      student: student_id,
+      date: moment().tz("Asia/Kolkata").format("YYYY-MM-DD"),
+    }).populate("course");
+    res.status(200).json(attendence);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
