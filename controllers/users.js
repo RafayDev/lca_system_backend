@@ -82,22 +82,20 @@ export const login = async (req, res) => {
       sameSite: "none",
     });
 
-    let studentId;
+    let studentData;
     if (role.name === "student") {
       const student = await Student.findOne({ email: user.email });
       if (student) {
-        studentId = student.id;
+        studentData = student;
       }
     }
 
-    res
-      .status(200)
-      .json({
-        authToken,
-        permissions: permissions.map((permission) => permission.name),
-        role: role.name,
-        studentId,
-      });
+    res.status(200).json({
+      authToken,
+      permissions: permissions.map((permission) => permission.name),
+      role: role.name,
+      studentData,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -107,7 +105,9 @@ export const adminlogin = async (req, res) => {
   const { email, password } = req.body;
   try {
     // Find the user by email
-    const user = await User.findOne({ $and: [{ email }, { role: { $ne: "student" } }] });
+    const user = await User.findOne({
+      $and: [{ email }, { role: { $ne: "student" } }],
+    });
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -155,14 +155,12 @@ export const adminlogin = async (req, res) => {
       }
     }
 
-    res
-      .status(200)
-      .json({
-        authToken,
-        permissions: permissions.map((permission) => permission.name),
-        role: role.name,
-        studentId,
-      });
+    res.status(200).json({
+      authToken,
+      permissions: permissions.map((permission) => permission.name),
+      role: role.name,
+      studentId,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -293,11 +291,9 @@ export const changePassword = async (req, res) => {
 
   // Validate request data
   if (!email || !currentPassword || !newPassword) {
-    return res
-      .status(400)
-      .json({
-        message: "Email, current password, and new password are required",
-      });
+    return res.status(400).json({
+      message: "Email, current password, and new password are required",
+    });
   }
 
   try {
