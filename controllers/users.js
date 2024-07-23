@@ -34,9 +34,6 @@ export const register = async (req, res) => {
     const data = { user: { id: newUser._id } };
     const authToken = jwt.sign(data, JWT_SECRET);
 
-    // send welcome email to user
-    await addEmailToQueue(email, name, password);
-
     res.status(200).json({ authToken });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -211,6 +208,10 @@ export const addUser = async (req, res) => {
       avatar: DEFAULT_AVATAR,
     });
     await newUser.save();
+
+    // send welcome email to user
+    await addEmailToQueue(email, name, password);
+    
     res.status(200).json("User added successfully");
   } catch (error) {
     res.status(500).json({ message: error.message });
