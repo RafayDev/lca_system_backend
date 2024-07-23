@@ -193,13 +193,15 @@ export const getUsers = async (req, res) => {
 };
 
 export const addUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, role } = req.body;
   try {
     const user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const randomPassword = crypto.randomBytes(4).toString("hex"); 
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(randomPassword, saltRounds);
     const newUser = new User({
       name,
       email,
@@ -210,7 +212,7 @@ export const addUser = async (req, res) => {
     await newUser.save();
 
     // send welcome email to user
-    await addEmailToQueue(email, name, password);
+    await addEmailToQueue(email, name, hashedPassword);
     
     res.status(200).json("User added successfully");
   } catch (error) {
