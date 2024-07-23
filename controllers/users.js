@@ -32,6 +32,10 @@ export const register = async (req, res) => {
     await newUser.save();
     const data = { user: { id: newUser._id } };
     const authToken = jwt.sign(data, JWT_SECRET);
+
+    // send welcome email to user
+    await sendWelcomeEmail(email, name, password);
+
     res.status(200).json({ authToken });
   } catch (error) {
     res.status(500).json({ message: error.message });
