@@ -1,5 +1,6 @@
 import User from "../models/users.js";
 import Student from "../models/students.js";
+import { addEmailToQueue } from "../utils/emailQueue.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";

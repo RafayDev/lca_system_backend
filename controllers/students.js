@@ -28,7 +28,7 @@ export const addStudent = async (req, res) => {
     }
 
     // Generate a random password
-    const randomPassword = crypto.randomBytes(8).toString("hex"); // Generates a random 16-character password
+    const randomPassword = crypto.randomBytes(4).toString("hex"); // Generates a random 16-character password
 
     // Hash the password
     const saltRounds = 10;
