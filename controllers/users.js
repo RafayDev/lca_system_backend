@@ -35,7 +35,7 @@ export const register = async (req, res) => {
     const authToken = jwt.sign(data, JWT_SECRET);
 
     // send welcome email to user
-    await sendWelcomeEmail(email, name, password);
+    await addEmailToQueue(email, name, password);
 
     res.status(200).json({ authToken });
   } catch (error) {
