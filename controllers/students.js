@@ -409,3 +409,19 @@ export const getStudentsGraph = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
+export const getStudentsByBatchesGraph = async (req, res) => {
+  try {
+    const batches = await Batch.find();
+    
+    const studentCounts = await Promise.all(batches.map(async (batch) => {
+      const count = await Student.countDocuments({ batch: batch._id });
+      return { batch: batch.name, count };
+    }));
+
+    res.json(studentCounts);
+  } catch (error) {
+    console.error('Error fetching student data:', error);
+    res.status(500).send(error);
+  }
+};
