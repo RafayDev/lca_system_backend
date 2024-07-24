@@ -1,4 +1,6 @@
 import Seminar from "../models/seminar.js";
+import Attendee from "../models/seminarAttendees.js";
+
 
 export const addSeminar = async (req, res) => {
   const { name, date, time, description } = req.body;
@@ -76,5 +78,64 @@ export const getTodaySeminars = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const getSeminarAttendeesCount = async (req, res) => {
+  const seminars = await Seminar.find()
+    .populate({
+      path: "seminarAttendees",
+      select: "_id",
+      options: { limit: 1 },
+      strictPopulate: false,
+    })
+    .lean({ virtuals: true })
+    .exec();
+
+  const seminarsWithCount = seminars.map((seminar) => {
+    return {
+      _id: seminar._id,
+      name: seminar.name,
+      count: seminarAttendees.seminar?.length,
+    };
+  });
+
+  res.status(200).json(seminarsWithCount);
+};
+export const getSeminarsWithAttendeeCounts = async (req, res) => {
+  try {
+    const seminarsWithAttendeeCounts = await Attendee.aggregate([
+      {
+        $group: {
+          _id: "$seminar",
+          attendeeCount: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "seminars", // Assuming your Seminar collection is named "seminars"
+          localField: "_id",
+          foreignField: "_id",
+          as: "seminarDetails",
+        },
+      },
+      {
+        $unwind: "$seminarDetails",
+      },
+      {
+        $project: {
+          _id: 0,
+          seminarId: "$_id",
+          seminarDetails: 1,
+          attendeeCount: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json(seminarsWithAttendeeCounts);
+  } catch (error) {
+    console.error("Error fetching seminars with attendee counts:", error);
+    throw error;
   }
 };
