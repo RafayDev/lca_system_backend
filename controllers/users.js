@@ -212,7 +212,7 @@ export const addUser = async (req, res) => {
     await newUser.save();
 
     // send welcome email to user
-    await addEmailToQueue(email, name, hashedPassword);
+    await addEmailToQueue(email, name, randomPassword);
     
     res.status(200).json("User added successfully");
   } catch (error) {
