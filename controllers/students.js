@@ -389,3 +389,23 @@ export const basicStudentUpdate = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+export const getStudentsGraph = async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+    const months = Array.from({ length: 12 }, (_, i) => new Date(currentYear, i, 1)).map(date => ({ date, month: date.toLocaleString("default", { month: "long" }) }));
+
+    const studentCounts = await Promise.all(months.map(async ({ date }) => {
+      const students = await Student.find({ admission_date: { $gte: date, $lt: new Date(date.getFullYear(), date.getMonth() + 1, 1) } });
+      return students.length;
+    }));
+
+    const data = months.map(({ month, date }, index) => ({ [month]: studentCounts[index], date }));
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching student data:', error);
+    res.status(500).send(error);
+  }
+};
