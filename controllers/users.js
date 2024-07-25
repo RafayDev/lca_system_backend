@@ -84,11 +84,18 @@ export const login = async (req, res) => {
       sameSite: "none",
     });
 
-    let studentData;
+    let studentData = null;
+    let check = 1;
     if (role.name === "student") {
       const student = await Student.findOne({ email: user.email });
       if (student) {
-        studentData = student;
+        studentData = student.toObject(); // Convert the Mongoose document to a plain JavaScript object
+        const hasEmptyFields = Object.values(studentData).some(
+          (field) => field === "" || field === null || field === undefined
+        );
+        if (hasEmptyFields) {
+          check = 0;
+        }
       }
     }
 
@@ -97,6 +104,7 @@ export const login = async (req, res) => {
       permissions: permissions.map((permission) => permission.name),
       role: role.name,
       studentData,
+      check,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -199,7 +207,7 @@ export const addUser = async (req, res) => {
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const randomPassword = crypto.randomBytes(4).toString("hex"); 
+    const randomPassword = crypto.randomBytes(4).toString("hex");
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(randomPassword, saltRounds);
     const newUser = new User({
@@ -213,7 +221,7 @@ export const addUser = async (req, res) => {
 
     // send welcome email to user
     await addEmailToQueue(email, name, randomPassword);
-    
+
     res.status(200).json("User added successfully");
   } catch (error) {
     res.status(500).json({ message: error.message });
