@@ -103,8 +103,8 @@ export const login = async (req, res) => {
       authToken,
       permissions: permissions.map((permission) => permission.name),
       role: role.name,
-      studentData,
       check,
+      studentData,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
