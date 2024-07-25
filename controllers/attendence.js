@@ -17,12 +17,12 @@ export const createAttendence = async (req, res) => {
 
     const currentTime = moment().tz("Asia/Karachi").format("HH:mm");
     const currentDay = moment().tz("Asia/Karachi").format("YYYY-MM-DD");
-    // console.log(currentTime, currentDay);
+
     const timetable = await TimeTable.find({
       day: currentDay,
       batch: student.batch,
-      // start_time: { $lte: currentTime },
-      // end_time: { $gte: currentTime },
+      start_time: { $lte: currentTime },
+      end_time: { $gte: currentTime },
     })
       .populate("batch")
       .populate("course")
@@ -48,6 +48,11 @@ export const createAttendence = async (req, res) => {
     const course_id = timetable_courses_ids.find((id) =>
       enrollment_courses_ids.includes(id)
     );
+
+    console.log(timetable_courses_ids);
+    console.log(enrollment_courses_ids);
+    console.log(course_id);
+    
     if (!course_id) {
       return res.status(400).json({
         message: "No class is scheduled for this student at the moment " ,
