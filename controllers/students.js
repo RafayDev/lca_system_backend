@@ -17,7 +17,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 export const addStudent = async (req, res) => {
   const { name, email, phone } = req.body;
-
   const admission_date = req.body.admission_date || new Date();
 
   try {
@@ -56,6 +55,18 @@ export const addStudent = async (req, res) => {
       paid_fee: 0,
       pending_fee: 0,
       password: hashedPassword, // Save the hashed password
+      cnic: "",
+      date_of_birth: "",
+      father_name: "",
+      father_phone: "",
+      latest_degree: "",
+      university: "",
+      city: "",
+      completion_year: "",
+      marks_cgpa: "",
+      cnic_image: "",
+      cnic_back_image: "",
+      image: "",
     });
 
     await newStudent.save();
@@ -375,7 +386,8 @@ export const basicStudentUpdate = async (req, res) => {
     }
 
     const newPaidFee = student.paid_fee + paid_fee;
-    const pendingFee = student.total_fee > newPaidFee ? student.total_fee - newPaidFee : 0;
+    const pendingFee =
+      student.total_fee > newPaidFee ? student.total_fee - newPaidFee : 0;
 
     await Student.findByIdAndUpdate(id, {
       name,
@@ -390,22 +402,36 @@ export const basicStudentUpdate = async (req, res) => {
   }
 };
 
-
-
 export const getStudentsGraph = async (req, res) => {
   try {
     const currentYear = new Date().getFullYear();
-    const months = Array.from({ length: 12 }, (_, i) => new Date(currentYear, i, 1)).map(date => ({ date, month: date.toLocaleString("default", { month: "long" }) }));
-
-    const studentCounts = await Promise.all(months.map(async ({ date }) => {
-      const students = await Student.find({ admission_date: { $gte: date, $lt: new Date(date.getFullYear(), date.getMonth() + 1, 1) } });
-      return students.length;
+    const months = Array.from(
+      { length: 12 },
+      (_, i) => new Date(currentYear, i, 1)
+    ).map((date) => ({
+      date,
+      month: date.toLocaleString("default", { month: "long" }),
     }));
 
-    const data = months.map(({ month, date }, index) => ({ [month]: studentCounts[index], date }));
+    const studentCounts = await Promise.all(
+      months.map(async ({ date }) => {
+        const students = await Student.find({
+          admission_date: {
+            $gte: date,
+            $lt: new Date(date.getFullYear(), date.getMonth() + 1, 1),
+          },
+        });
+        return students.length;
+      })
+    );
+
+    const data = months.map(({ month, date }, index) => ({
+      [month]: studentCounts[index],
+      date,
+    }));
     res.json(data);
   } catch (error) {
-    console.error('Error fetching student data:', error);
+    console.error("Error fetching student data:", error);
     res.status(500).send(error);
   }
 };
@@ -413,15 +439,17 @@ export const getStudentsGraph = async (req, res) => {
 export const getStudentsByBatchesGraph = async (req, res) => {
   try {
     const batches = await Batch.find();
-    
-    const studentCounts = await Promise.all(batches.map(async (batch) => {
-      const count = await Student.countDocuments({ batch: batch._id });
-      return { batch: batch.name, count };
-    }));
+
+    const studentCounts = await Promise.all(
+      batches.map(async (batch) => {
+        const count = await Student.countDocuments({ batch: batch._id });
+        return { batch: batch.name, count };
+      })
+    );
 
     res.json(studentCounts);
   } catch (error) {
-    console.error('Error fetching student data:', error);
+    console.error("Error fetching student data:", error);
     res.status(500).send(error);
   }
 };
