@@ -6,7 +6,7 @@ const attendeeSchema = mongoose.Schema({
   phone: String,
   city: String,
   qualification: String,
-  attend_type: [String],
+  age: String,
   seminar: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Seminar",

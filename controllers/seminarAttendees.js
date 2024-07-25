@@ -20,7 +20,7 @@ export const getAttendee = async (req, res) => {
 };
 
 export const createAttendee = async (req, res) => {
-  const { name, phone, city, qualification, attend_type, seminar_id } =
+  const { name, phone, city, qualification, age, seminar_id } =
     req.body;
 
   try {
@@ -29,7 +29,7 @@ export const createAttendee = async (req, res) => {
       phone,
       city,
       qualification,
-      attend_type,
+      age,
       seminar: seminar_id,
     });
     await newAttendee.save();
