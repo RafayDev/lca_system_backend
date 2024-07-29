@@ -1,5 +1,6 @@
 import Seminar from "../models/seminar.js";
 import Attendee from "../models/seminarAttendees.js";
+import moment from "moment-timezone";
 
 
 export const addSeminar = async (req, res) => {
