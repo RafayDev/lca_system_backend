@@ -1,14 +1,13 @@
 import nodemailer from 'nodemailer';
-import mg from 'nodemailer-mailgun-transport'
 
-const auth = {
+// Configure Nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
   auth: {
-    api_key: process.env.MAILGUN_API_KEY, // Your Mailgun API key from environment variables
-    domain: process.env.MAILGUN_DOMAIN, // Your Mailgun domain from environment variables
+    user: process.env.EMAIL_USER, // Your email address from environment variables
+    pass: process.env.EMAIL_PASS, // Your email password from environment variables
   },
-};
-
-const transporter = nodemailer.createTransport(mg(auth));
+});
 
 // Function to send welcome email
 const sendPasswordResetEmail = async (email, password) => {
