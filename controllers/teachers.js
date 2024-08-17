@@ -4,6 +4,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import { storage } from "../utils/firebase.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import  {uploadFile}  from "../utils/fileUploadUtils.js";
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -17,19 +18,23 @@ export const addTeacher = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const imageFile = image;
-    const imageFileName = `${Date.now()}_${imageFile.name}`;
-    const imageRef = ref(storage, `teacher_images/${imageFileName}`);
-    const imageUploadTask = uploadBytes(imageRef, imageFile.data);
-    await imageUploadTask;
-    const imageUrl = await getDownloadURL(imageRef);
+    // const imageFile = image;
+    // const imageFileName = `${Date.now()}_${imageFile.name}`;
+    // const imageRef = ref(storage, `teacher_images/${imageFileName}`);
+    // const imageUploadTask = uploadBytes(imageRef, imageFile.data);
+    // await imageUploadTask;
+    // const imageUrl = await getDownloadURL(imageRef);
 
-    const resumeFile = resume;
-    const resumeFileName = `${Date.now()}_${resumeFile.name}`;
-    const resumeRef = ref(storage, `teacher_resumes/${resumeFileName}`);
-    const resumeUploadTask = uploadBytes(resumeRef, resumeFile.data);
-    await resumeUploadTask;
-    const resumeUrl = await getDownloadURL(resumeRef);
+    // const resumeFile = resume;
+    // const resumeFileName = `${Date.now()}_${resumeFile.name}`;
+    // const resumeRef = ref(storage, `teacher_resumes/${resumeFileName}`);
+    // const resumeUploadTask = uploadBytes(resumeRef, resumeFile.data);
+    // await resumeUploadTask;
+    // const resumeUrl = await getDownloadURL(resumeRef);
+    const imageFileName = await uploadFile(image, 'public/teacher_images');
+    const resumeFileName = await uploadFile(resume, 'public/teacher_resumes');
+    const imageUrl = `${req.protocol}://${req.get('host')}/public/teacher_images/${imageFileName}`;
+    const resumeUrl = `${req.protocol}://${req.get('host')}/public/teacher_resumes/${resumeFileName}`;
 
     const newTeacher = new Teacher({
       name,
