@@ -1,6 +1,6 @@
 import Teacher from "../models/teachers.js";
 import dotenv from "dotenv";
-import { compressImage, uploadFile } from "../utils/fileStorage.js";
+import { compressImage, renameFile, uploadFile } from "../utils/fileStorage.js";
 import path from "path";
 dotenv.config();
 
@@ -19,15 +19,15 @@ export const addTeacher = async (req, res) => {
 
     const imageFile = image;
     const imageFileExt = path.extname(imageFile.name);
-    const imageFileName = `avatar_${existingTeacher._id}${imageFileExt}`;
+    const imageFileName = `avatar_${email}${imageFileExt}`;
     await uploadFile(imageFile, imageFileName, `${filesStoragePath}/teachers/avatars`);
-    const imageWebpFileName = `avatar_${existingTeacher._id}.webp`;
+    const imageWebpFileName = `avatar_${email}.webp`;
     await compressImage(imageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
     const imageUrl = `${filesStorageUrl}/files/teachers/avatars/${imageFileName}`;
 
     const resumeFile = resume;
     const resumeFileExt = path.extname(resumeFile.name);
-    const resumeFileName = `resume_${existingTeacher._id}${resumeFileExt}`;
+    const resumeFileName = `resume_${email}${resumeFileExt}`;
     await uploadFile(resumeFile, resumeFileName, `${filesStoragePath}/teachers/resumes`);
     const resumeUrl = `${filesStorageUrl}/files/teachers/resumes/${resumeFileName}`;
 
@@ -39,6 +39,21 @@ export const addTeacher = async (req, res) => {
       image: imageUrl,
     });
     await newTeacher.save();
+
+    const { _id } = newTeacher;
+    const teacher = await Teacher.findById(_id);
+
+    // update the name of compressed image
+    const newImageFileName = `avatar_${newTeacher._id}.webp`;
+    renameFile(`${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, `${filesStoragePath}/teachers/avatars/${newImageFileName}`);
+    teacher.image = `${filesStorageUrl}/files/teachers/avatars/${newImageFileName}`
+
+    // update the name of resume
+    const newResumeFileName = `resume_${newTeacher._id}${resumeFileExt}`;
+    renameFile(`${filesStoragePath}/teachers/resumes/${resumeFileName}`, `${filesStoragePath}/teachers/resumes/${newResumeFileName}`);
+    teacher.resume = `${filesStorageUrl}/files/teachers/resumes/${newResumeFileName}`
+
+    await teacher.save()
 
     res.status(200).json("Teacher added successfully");
   } catch (error) {

@@ -52,3 +52,7 @@ export const compressImage = async (originalFilePath, compressedFilePath, qualit
     throw new Error(`Image compression failed: ${error.message}`);
   }
 }
+
+export const renameFile = async (oldFilePath, newFilePath) => {
+  fs.renameSync(oldFilePath, newFilePath);
+}
