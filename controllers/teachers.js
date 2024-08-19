@@ -13,6 +13,7 @@ export const addTeacher = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
+    const filesStorageUrl = process.env.FILES_STORAGE_URL;
     const filesStoragePath = process.env.FILES_STORAGE_PATH;
 
     const imageFile = image;
@@ -21,13 +22,13 @@ export const addTeacher = async (req, res) => {
     await uploadFile(imageFile, imageFileName, `${filesStoragePath}/teachers/avatars`);
     const imageWebpFileName = `avatar_${existingTeacher._id}.webp`;
     await compressImage(imageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
-    const imageUrl = `${req.protocol}://${req.get("host")}/${filesStoragePath}/teachers/avatars/${imageFileName}`;
+    const imageUrl = `${filesStorageUrl}/files/teachers/avatars/${imageFileName}`;
 
     const resumeFile = resume;
     const resumeFileExt = path.extname(resumeFile.name);
     const resumeFileName = `resume_${existingTeacher._id}${resumeFileExt}`;
     await uploadFile(resumeFile, resumeFileName, `${filesStoragePath}/teachers/resumes`);
-    const resumeUrl = `${req.protocol}://${req.get("host")}/${filesStoragePath}/teachers/resumes/${resumeFileName}`;
+    const resumeUrl = `${filesStorageUrl}/files/teachers/resumes/${resumeFileName}`;
 
     const newTeacher = new Teacher({
       name,
@@ -111,23 +112,22 @@ export const updateTeacher = async (req, res) => {
       }
     }
 
+    const filesStorageUrl = process.env.FILES_STORAGE_URL;
+    const filesStoragePath = process.env.FILES_STORAGE_PATH;
+
     let newImagePath = teacher.image;
-    if (image) {
-      const imageFileName = `${Date.now()}_${image.name}`;
-      const imageRef = ref(storage, `teacher_images/${imageFileName}`);
-      const imageUploadTask = uploadBytes(imageRef, image.data);
-      await imageUploadTask;
-      newImagePath = await getDownloadURL(imageRef);
-    }
+    const newImageFileExt = path.extname(newImagePath.name);
+    const newImageFileName = `avatar_${existingTeacher._id}${newImageFileExt}`;
+    await uploadFile(newImagePath, newImageFileName, `${filesStoragePath}/teachers/avatars`);
+    const imageWebpFileName = `avatar_${existingTeacher._id}.webp`;
+    await compressImage(newImageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
+    newImagePath = `${filesStorageUrl}/files/teachers/avatars/${newImageFileName}`;
 
     let newResumePath = teacher.resume;
-    if (resume) {
-      const resumeFileName = `${Date.now()}_${resume.name}`;
-      const resumeRef = ref(storage, `teacher_resumes/${resumeFileName}`);
-      const resumeUploadTask = uploadBytes(resumeRef, resume.data);
-      await resumeUploadTask;
-      newResumePath = await getDownloadURL(resumeRef);
-    }
+    const resumeFileExt = path.extname(newResumePath.name);
+    const resumeFileName = `resume_${existingTeacher._id}${resumeFileExt}`;
+    await uploadFile(newResumePath, resumeFileName, `${filesStoragePath}/teachers/resumes`);
+    newResumePath = `${filesStorageUrl}/files/teachers/resumes/${resumeFileName}`;
 
     await Teacher.findByIdAndUpdate(id, {
       name,
