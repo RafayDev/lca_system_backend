@@ -24,7 +24,7 @@ export const addTeacher = async (req, res) => {
     const imageFileName = `avatar_${emailStr}${imageFileExt}`;
     await uploadFile(imageFile, imageFileName, `${filesStoragePath}/teachers/avatars`);
     const imageWebpFileName = `avatar_${emailStr}.webp`;
-    await compressImage(imageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
+    await compressImage(`${filesStoragePath}/teachers/avatars/${imageFileName}`, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
     const imageUrl = `${filesStorageUrl}/files/teachers/avatars/${imageFileName}`;
 
     const resumeFile = resume;
