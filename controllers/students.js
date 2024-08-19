@@ -7,6 +7,7 @@ import QRCode from "qrcode";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { compressImage, uploadFile } from "../utils/fileStorage.js";
+import path from "path";
 dotenv.config();
 
 // const crypto = require("crypto");

@@ -1,6 +1,7 @@
 import Teacher from "../models/teachers.js";
 import dotenv from "dotenv";
 import { compressImage, uploadFile } from "../utils/fileStorage.js";
+import path from "path";
 dotenv.config();
 
 export const addTeacher = async (req, res) => {
