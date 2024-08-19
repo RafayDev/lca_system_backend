@@ -17,17 +17,19 @@ export const addTeacher = async (req, res) => {
     const filesStorageUrl = process.env.FILES_STORAGE_URL;
     const filesStoragePath = process.env.FILES_STORAGE_PATH;
 
+    const emailStr = email.split("@")[0];
+
     const imageFile = image;
     const imageFileExt = path.extname(imageFile.name);
-    const imageFileName = `avatar_${email}${imageFileExt}`;
+    const imageFileName = `avatar_${emailStr}${imageFileExt}`;
     await uploadFile(imageFile, imageFileName, `${filesStoragePath}/teachers/avatars`);
-    const imageWebpFileName = `avatar_${email}.webp`;
+    const imageWebpFileName = `avatar_${emailStr}.webp`;
     await compressImage(imageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
     const imageUrl = `${filesStorageUrl}/files/teachers/avatars/${imageFileName}`;
 
     const resumeFile = resume;
     const resumeFileExt = path.extname(resumeFile.name);
-    const resumeFileName = `resume_${email}${resumeFileExt}`;
+    const resumeFileName = `resume_${emailStr}${resumeFileExt}`;
     await uploadFile(resumeFile, resumeFileName, `${filesStoragePath}/teachers/resumes`);
     const resumeUrl = `${filesStorageUrl}/files/teachers/resumes/${resumeFileName}`;
 
