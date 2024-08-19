@@ -140,7 +140,7 @@ export const updateTeacher = async (req, res) => {
       await uploadFile(newImagePath, newImageFileName, `${filesStoragePath}/teachers/avatars`);
       const imageWebpFileName = `avatar_${teacher._id}.webp`;
       await compressImage(`${filesStoragePath}/teachers/avatars/${newImageFileName}`, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
-      newImagePath = `${filesStorageUrl}/files/teachers/avatars/${newImageFileName}`;
+      newImagePath = `${filesStorageUrl}/files/teachers/avatars/${imageWebpFileName}`;
       teacher.image = newImagePath;
     }
 
