@@ -136,9 +136,9 @@ export const updateTeacher = async (req, res) => {
     let newImagePath = image;
     if (newImagePath && newImagePath != "") {
       const newImageFileExt = path.extname(newImagePath.name);
-      const newImageFileName = `avatar_${existingTeacher._id}${newImageFileExt}`;
+      const newImageFileName = `avatar_${teacher._id}${newImageFileExt}`;
       await uploadFile(newImagePath, newImageFileName, `${filesStoragePath}/teachers/avatars`);
-      const imageWebpFileName = `avatar_${existingTeacher._id}.webp`;
+      const imageWebpFileName = `avatar_${teacher._id}.webp`;
       await compressImage(newImageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
       newImagePath = `${filesStorageUrl}/files/teachers/avatars/${newImageFileName}`;
       teacher.image = newImagePath;
@@ -147,7 +147,7 @@ export const updateTeacher = async (req, res) => {
     let newResumePath = resume;
     if (newResumePath && newResumePath != "") {
       const resumeFileExt = path.extname(newResumePath.name);
-      const resumeFileName = `resume_${existingTeacher._id}${resumeFileExt}`;
+      const resumeFileName = `resume_${teacher._id}${resumeFileExt}`;
       await uploadFile(newResumePath, resumeFileName, `${filesStoragePath}/teachers/resumes`);
       newResumePath = `${filesStorageUrl}/files/teachers/resumes/${resumeFileName}`;
       teacher.resume = newResumePath;
