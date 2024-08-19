@@ -5,15 +5,15 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import path from "path";
+
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const DEFAULT_AVATAR =
   "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9";
 import Role from "../models/roles.js";
 import Permission from "../models/permissions.js";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../utils/firebase.js";
-import { addResetPasswordEmailToQueue } from "../utils/emailQueue.js";
+import { compressImage, uploadFile } from "../utils/fileStorage.js";
 
 export const register = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -285,14 +285,20 @@ export const changeAvatar = async (req, res) => {
       return res.status(400).json({ message: "User does not exist" });
     }
 
-    // Upload the image to Firebase Storage
-    const avatarFile = avatar;
-    const avatarFileName = `avatars_${id}.png`;
-    const avatarFileRef = ref(storage, `avatars/${avatarFileName}`);
-    const uploadavatarFileTask = uploadBytes(avatarFileRef, avatarFile.data);
-    await uploadavatarFileTask;
+    const imagesStoragePath = process.env.IMAGES_STORAGE_PATH;
 
-    const avatarURL = await getDownloadURL(avatarFileRef);
+    // Upload the image to file storage
+    const avatarFile = avatar;
+    const avatarFileExt = path.extname(avatarFile.name);
+    const avatarFileName = `avatar_${id}${avatarFileExt}`;
+    await uploadFile(avatarFile, avatarFileName, `${imagesStoragePath}/avatars`);
+    
+    // compress the image to webp 
+    const webpFileName = `avatar_${id}.webp`;
+    await compressImage(`${imagesStoragePath}/avatars/${avatarFileName}`, `${imagesStoragePath}/avatars/${webpFileName}`, 50);
+
+    // Get the download URL of the compressed image
+    const avatarURL = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/avatars/${webpFileName}`;
 
     await User.findByIdAndUpdate(id, { avatar: avatarURL });
 

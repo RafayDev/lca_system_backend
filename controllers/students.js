@@ -2,16 +2,12 @@ import Student from "../models/students.js";
 import Batch from "../models/batches.js";
 import User from "../models/users.js";
 import { addEmailToQueue } from "../utils/emailQueue.js";
-import jwt from "jsonwebtoken";
-import fs from "fs";
-import { storage } from "../utils/firebase.js";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import dotenv, { populate } from "dotenv";
 import QRCode from "qrcode";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { compressImage, uploadFile } from "../utils/fileStorage.js";
 dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
 
 // const crypto = require("crypto");
 
@@ -168,38 +164,34 @@ export const updateStudent = async (req, res) => {
       }
     }
 
-    // Save image to Firebase storage
+    const imagesStoragePath = process.env.IMAGES_STORAGE_PATH;
+
+    // Save image to File Storage
     const imageFile = image;
-    const imageFileName = `${Date.now()}_${imageFile.name}`;
-    const imageRef = ref(storage, `student_images/${imageFileName}`);
-    const imageUploadTask = uploadBytes(imageRef, imageFile.data);
-    await imageUploadTask;
-    const imagePath = await getDownloadURL(imageRef);
+    const imageFileExt = path.extname(imageFile.name);
+    const imageFileName = `avatar_${id}${imageFileExt}`;
+    await uploadFile(imageFile, imageFileName, `${imagesStoragePath}/students/avatars`);
+    const imageWebpFileName = `avatar_${id}.webp`;
+    await compressImage(imageFileName, `${imagesStoragePath}/students/avatars/${imageWebpFileName}`, 50);
+    const imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/avatars/${imageWebpFileName}`
 
     // Save CNIC image to Firebase storage
     const cnicImageFile = cnic_image;
-    const cnicImageFileName = `${Date.now()}_${cnicImageFile.name}`;
-    const cnicImageRef = ref(
-      storage,
-      `student_cnic_images/${cnicImageFileName}`
-    );
-    const cnicImageUploadTask = uploadBytes(cnicImageRef, cnicImageFile.data);
-    await cnicImageUploadTask;
-    const cnic_imagePath = await getDownloadURL(cnicImageRef);
+    const cnicImageFileExt = path.extname(cnicImageFile.name);
+    const cnicImageFileName = `cnic_front_${id}${cnicImageFileExt}`;
+    await uploadFile(cnicImageFile, cnicImageFileName, `${imagesStoragePath}/students/cnic_images`);
+    const cnicImageWebpFileName = `cnic_front_${id}.webp`;
+    await compressImage(cnicImageFileName, `${imagesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`, 50);
+    const cnic_imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`
 
     // Save CNIC back image to Firebase storage
     const cnicBackImageFile = cnic_back_image;
-    const cnicBackImageFileName = `${Date.now()}_${cnicBackImageFile.name}`;
-    const cnicBackImageRef = ref(
-      storage,
-      `student_cnic_back_images/${cnicBackImageFileName}`
-    );
-    const cnicBackImageUploadTask = uploadBytes(
-      cnicBackImageRef,
-      cnicBackImageFile.data
-    );
-    await cnicBackImageUploadTask;
-    const cnic_back_imagePath = await getDownloadURL(cnicBackImageRef);
+    const cnicBackImageFileExt = path.extname(cnicBackImageFile.name);
+    const cnicBackImageFileName = `cnic_back_${id}${cnicBackImageFileExt}`;
+    await uploadFile(cnicBackImageFile, cnicBackImageFileName, `${imagesStoragePath}/students/cnic_images`);
+    const cnicBackImageWebpFileName = `cnic_back_${id}.webp`;
+    await compressImage(cnicBackImageFileName, `${imagesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
+    const cnic_back_imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`
 
     // Update the student record
     await Student.findByIdAndUpdate(id, {
@@ -290,26 +282,34 @@ export const updateStudentinfo = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // Save image to Firebase storage
-    const uploadImage = async (imageFile, path) => {
-      const fileName = `${Date.now()}_${imageFile.name}`;
-      const fileRef = ref(storage, path);
-      const uploadTask = uploadBytes(fileRef, imageFile.data);
-      await uploadTask;
-      return getDownloadURL(fileRef);
-    };
+    const imagesStoragePath = process.env.IMAGES_STORAGE_PATH;
 
-    const [imagePath, cnicImagePath, cnicBackImagePath] = await Promise.all([
-      uploadImage(image, "student_images/" + `${Date.now()}_${image.name}`),
-      uploadImage(
-        cnic_image,
-        "student_cnic_images/" + `${Date.now()}_${cnic_image.name}`
-      ),
-      uploadImage(
-        cnic_back_image,
-        "student_cnic_back_images/" + `${Date.now()}_${cnic_back_image.name}`
-      ),
-    ]);
+    // Save image to File Storage
+    const imageFile = image;
+    const imageFileExt = path.extname(imageFile.name);
+    const imageFileName = `avatar_${id}${imageFileExt}`;
+    await uploadFile(imageFile, imageFileName, `${imagesStoragePath}/students/avatars`);
+    const imageWebpFileName = `avatar_${id}.webp`;
+    await compressImage(imageFileName, `${imagesStoragePath}/students/avatars/${imageWebpFileName}`, 50);
+    const imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/avatars/${imageWebpFileName}`
+
+    // Save CNIC image to Firebase storage
+    const cnicImageFile = cnic_image;
+    const cnicImageFileExt = path.extname(cnicImageFile.name);
+    const cnicImageFileName = `cnic_front_${id}${cnicImageFileExt}`;
+    await uploadFile(cnicImageFile, cnicImageFileName, `${imagesStoragePath}/students/cnic_images`);
+    const cnicImageWebpFileName = `cnic_front_${id}.webp`;
+    await compressImage(cnicImageFileName, `${imagesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`, 50);
+    const cnic_imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`
+
+    // Save CNIC back image to Firebase storage
+    const cnicBackImageFile = cnic_back_image;
+    const cnicBackImageFileExt = path.extname(cnicBackImageFile.name);
+    const cnicBackImageFileName = `cnic_back_${id}${cnicBackImageFileExt}`;
+    await uploadFile(cnicBackImageFile, cnicBackImageFileName, `${imagesStoragePath}/students/cnic_images`);
+    const cnicBackImageWebpFileName = `cnic_back_${id}.webp`;
+    await compressImage(cnicBackImageFileName, `${imagesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
+    const cnic_back_imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`
 
     // Update the student record
     await Student.findByIdAndUpdate(id, {
@@ -322,9 +322,9 @@ export const updateStudentinfo = async (req, res) => {
       university,
       completion_year,
       marks_cgpa,
-      cnic_image: cnicImagePath,
+      cnic_image: cnic_imagePath,
       image: imagePath,
-      cnic_back_image: cnicBackImagePath,
+      cnic_back_image: cnic_back_imagePath,
     });
 
     res.status(200).json("Student updated successfully");
