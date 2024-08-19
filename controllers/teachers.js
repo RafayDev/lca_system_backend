@@ -13,21 +13,21 @@ export const addTeacher = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const imagesStoragePath = process.env.IMAGES_STORAGE_PATH;
+    const filesStoragePath = process.env.FILES_STORAGE_PATH;
 
     const imageFile = image;
     const imageFileExt = path.extname(imageFile.name);
     const imageFileName = `avatar_${existingTeacher._id}${imageFileExt}`;
-    await uploadFile(imageFile, imageFileName, `${imagesStoragePath}/teachers/avatars`);
+    await uploadFile(imageFile, imageFileName, `${filesStoragePath}/teachers/avatars`);
     const imageWebpFileName = `avatar_${existingTeacher._id}.webp`;
-    await compressImage(imageFileName, `${imagesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
-    const imageUrl = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/teachers/avatars/${imageFileName}`;
+    await compressImage(imageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
+    const imageUrl = `${req.protocol}://${req.get("host")}/${filesStoragePath}/teachers/avatars/${imageFileName}`;
 
     const resumeFile = resume;
     const resumeFileExt = path.extname(resumeFile.name);
     const resumeFileName = `resume_${existingTeacher._id}${resumeFileExt}`;
-    await uploadFile(resumeFile, resumeFileName, `${imagesStoragePath}/teachers/resumes`);
-    const resumeUrl = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/teachers/resumes/${resumeFileName}`;
+    await uploadFile(resumeFile, resumeFileName, `${filesStoragePath}/teachers/resumes`);
+    const resumeUrl = `${req.protocol}://${req.get("host")}/${filesStoragePath}/teachers/resumes/${resumeFileName}`;
 
     const newTeacher = new Teacher({
       name,

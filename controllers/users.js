@@ -285,20 +285,20 @@ export const changeAvatar = async (req, res) => {
       return res.status(400).json({ message: "User does not exist" });
     }
 
-    const imagesStoragePath = process.env.IMAGES_STORAGE_PATH;
+    const filesStoragePath = process.env.FILES_STORAGE_PATH;
 
     // Upload the image to file storage
     const avatarFile = avatar;
     const avatarFileExt = path.extname(avatarFile.name);
     const avatarFileName = `avatar_${id}${avatarFileExt}`;
-    await uploadFile(avatarFile, avatarFileName, `${imagesStoragePath}/avatars`);
+    await uploadFile(avatarFile, avatarFileName, `${filesStoragePath}/avatars`);
     
     // compress the image to webp 
     const webpFileName = `avatar_${id}.webp`;
-    await compressImage(`${imagesStoragePath}/avatars/${avatarFileName}`, `${imagesStoragePath}/avatars/${webpFileName}`, 50);
+    await compressImage(`${filesStoragePath}/avatars/${avatarFileName}`, `${filesStoragePath}/avatars/${webpFileName}`, 50);
 
     // Get the download URL of the compressed image
-    const avatarURL = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/avatars/${webpFileName}`;
+    const avatarURL = `${req.protocol}://${req.get("host")}/${filesStoragePath}/avatars/${webpFileName}`;
 
     await User.findByIdAndUpdate(id, { avatar: avatarURL });
 

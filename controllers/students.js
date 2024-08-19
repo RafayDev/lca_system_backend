@@ -164,34 +164,34 @@ export const updateStudent = async (req, res) => {
       }
     }
 
-    const imagesStoragePath = process.env.IMAGES_STORAGE_PATH;
+    const filesStoragePath = process.env.FILES_STORAGE_PATH;
 
     // Save image to File Storage
     const imageFile = image;
     const imageFileExt = path.extname(imageFile.name);
     const imageFileName = `avatar_${id}${imageFileExt}`;
-    await uploadFile(imageFile, imageFileName, `${imagesStoragePath}/students/avatars`);
+    await uploadFile(imageFile, imageFileName, `${filesStoragePath}/students/avatars`);
     const imageWebpFileName = `avatar_${id}.webp`;
-    await compressImage(imageFileName, `${imagesStoragePath}/students/avatars/${imageWebpFileName}`, 50);
-    const imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/avatars/${imageWebpFileName}`
+    await compressImage(imageFileName, `${filesStoragePath}/students/avatars/${imageWebpFileName}`, 50);
+    const imagePath = `${req.protocol}://${req.get("host")}/${filesStoragePath}/students/avatars/${imageWebpFileName}`
 
     // Save CNIC image to Firebase storage
     const cnicImageFile = cnic_image;
     const cnicImageFileExt = path.extname(cnicImageFile.name);
     const cnicImageFileName = `cnic_front_${id}${cnicImageFileExt}`;
-    await uploadFile(cnicImageFile, cnicImageFileName, `${imagesStoragePath}/students/cnic_images`);
+    await uploadFile(cnicImageFile, cnicImageFileName, `${filesStoragePath}/students/cnic_images`);
     const cnicImageWebpFileName = `cnic_front_${id}.webp`;
-    await compressImage(cnicImageFileName, `${imagesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`, 50);
-    const cnic_imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`
+    await compressImage(cnicImageFileName, `${filesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`, 50);
+    const cnic_imagePath = `${req.protocol}://${req.get("host")}/${filesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`
 
     // Save CNIC back image to Firebase storage
     const cnicBackImageFile = cnic_back_image;
     const cnicBackImageFileExt = path.extname(cnicBackImageFile.name);
     const cnicBackImageFileName = `cnic_back_${id}${cnicBackImageFileExt}`;
-    await uploadFile(cnicBackImageFile, cnicBackImageFileName, `${imagesStoragePath}/students/cnic_images`);
+    await uploadFile(cnicBackImageFile, cnicBackImageFileName, `${filesStoragePath}/students/cnic_images`);
     const cnicBackImageWebpFileName = `cnic_back_${id}.webp`;
-    await compressImage(cnicBackImageFileName, `${imagesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
-    const cnic_back_imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`
+    await compressImage(cnicBackImageFileName, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
+    const cnic_back_imagePath = `${req.protocol}://${req.get("host")}/${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`
 
     // Update the student record
     await Student.findByIdAndUpdate(id, {
@@ -282,34 +282,34 @@ export const updateStudentinfo = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    const imagesStoragePath = process.env.IMAGES_STORAGE_PATH;
+    const filesStoragePath = process.env.IMAGES_STORAGE_PATH;
 
     // Save image to File Storage
     const imageFile = image;
     const imageFileExt = path.extname(imageFile.name);
     const imageFileName = `avatar_${id}${imageFileExt}`;
-    await uploadFile(imageFile, imageFileName, `${imagesStoragePath}/students/avatars`);
+    await uploadFile(imageFile, imageFileName, `${filesStoragePath}/students/avatars`);
     const imageWebpFileName = `avatar_${id}.webp`;
-    await compressImage(imageFileName, `${imagesStoragePath}/students/avatars/${imageWebpFileName}`, 50);
-    const imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/avatars/${imageWebpFileName}`
+    await compressImage(imageFileName, `${filesStoragePath}/students/avatars/${imageWebpFileName}`, 50);
+    const imagePath = `${req.protocol}://${req.get("host")}/${filesStoragePath}/students/avatars/${imageWebpFileName}`
 
     // Save CNIC image to Firebase storage
     const cnicImageFile = cnic_image;
     const cnicImageFileExt = path.extname(cnicImageFile.name);
     const cnicImageFileName = `cnic_front_${id}${cnicImageFileExt}`;
-    await uploadFile(cnicImageFile, cnicImageFileName, `${imagesStoragePath}/students/cnic_images`);
+    await uploadFile(cnicImageFile, cnicImageFileName, `${filesStoragePath}/students/cnic_images`);
     const cnicImageWebpFileName = `cnic_front_${id}.webp`;
-    await compressImage(cnicImageFileName, `${imagesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`, 50);
-    const cnic_imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`
+    await compressImage(cnicImageFileName, `${filesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`, 50);
+    const cnic_imagePath = `${req.protocol}://${req.get("host")}/${filesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`
 
     // Save CNIC back image to Firebase storage
     const cnicBackImageFile = cnic_back_image;
     const cnicBackImageFileExt = path.extname(cnicBackImageFile.name);
     const cnicBackImageFileName = `cnic_back_${id}${cnicBackImageFileExt}`;
-    await uploadFile(cnicBackImageFile, cnicBackImageFileName, `${imagesStoragePath}/students/cnic_images`);
+    await uploadFile(cnicBackImageFile, cnicBackImageFileName, `${filesStoragePath}/students/cnic_images`);
     const cnicBackImageWebpFileName = `cnic_back_${id}.webp`;
-    await compressImage(cnicBackImageFileName, `${imagesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
-    const cnic_back_imagePath = `${req.protocol}://${req.get("host")}/${imagesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`
+    await compressImage(cnicBackImageFileName, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
+    const cnic_back_imagePath = `${req.protocol}://${req.get("host")}/${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`
 
     // Update the student record
     await Student.findByIdAndUpdate(id, {
