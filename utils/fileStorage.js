@@ -56,3 +56,7 @@ export const compressImage = async (originalFilePath, compressedFilePath, qualit
 export const renameFile = async (oldFilePath, newFilePath) => {
   fs.renameSync(oldFilePath, newFilePath);
 }
+
+export const deleteFile = async (filePath) => {
+  fs.unlinkSync(filePath);
+}

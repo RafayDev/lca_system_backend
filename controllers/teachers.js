@@ -1,6 +1,6 @@
 import Teacher from "../models/teachers.js";
 import dotenv from "dotenv";
-import { compressImage, renameFile, uploadFile } from "../utils/fileStorage.js";
+import { compressImage, deleteFile, renameFile, uploadFile } from "../utils/fileStorage.js";
 import path from "path";
 dotenv.config();
 
@@ -104,6 +104,15 @@ export const deleteTeacher = async (req, res) => {
       return res.status(404).json({ message: "Teacher not found" });
     }
     await Teacher.findByIdAndDelete(id);
+
+    const filesStoragePath = process.env.FILES_STORAGE_PATH;
+
+    const imageFileName = `avatar_${id}.webp`;
+    const resumeFileName = `resume_${id}.pdf`;
+
+    // delete the image from file storage
+    await deleteFile(`${filesStoragePath}/teachers/avatars/${imageFileName}`);
+    await deleteFile(`${filesStoragePath}/teachers/resumes/${resumeFileName}`);
 
     res.status(200).json("Teacher deleted successfully");
   } catch (error) {
