@@ -114,7 +114,7 @@ export const deleteTeacher = async (req, res) => {
 export const updateTeacher = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
-  const { image, resume } = req.files || {};
+  const { image, resume } = req.files || "";
 
   try {
     const teacher = await Teacher.findById(id);
@@ -133,27 +133,31 @@ export const updateTeacher = async (req, res) => {
     const filesStorageUrl = process.env.FILES_STORAGE_URL;
     const filesStoragePath = process.env.FILES_STORAGE_PATH;
 
-    let newImagePath = teacher.image;
-    const newImageFileExt = path.extname(newImagePath.name);
-    const newImageFileName = `avatar_${existingTeacher._id}${newImageFileExt}`;
-    await uploadFile(newImagePath, newImageFileName, `${filesStoragePath}/teachers/avatars`);
-    const imageWebpFileName = `avatar_${existingTeacher._id}.webp`;
-    await compressImage(newImageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
-    newImagePath = `${filesStorageUrl}/files/teachers/avatars/${newImageFileName}`;
+    let newImagePath = image;
+    if (newImagePath && newImagePath != "") {
+      const newImageFileExt = path.extname(newImagePath.name);
+      const newImageFileName = `avatar_${existingTeacher._id}${newImageFileExt}`;
+      await uploadFile(newImagePath, newImageFileName, `${filesStoragePath}/teachers/avatars`);
+      const imageWebpFileName = `avatar_${existingTeacher._id}.webp`;
+      await compressImage(newImageFileName, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
+      newImagePath = `${filesStorageUrl}/files/teachers/avatars/${newImageFileName}`;
+      teacher.image = newImagePath;
+    }
 
-    let newResumePath = teacher.resume;
-    const resumeFileExt = path.extname(newResumePath.name);
-    const resumeFileName = `resume_${existingTeacher._id}${resumeFileExt}`;
-    await uploadFile(newResumePath, resumeFileName, `${filesStoragePath}/teachers/resumes`);
-    newResumePath = `${filesStorageUrl}/files/teachers/resumes/${resumeFileName}`;
+    let newResumePath = resume;
+    if (newResumePath && newResumePath != "") {
+      const resumeFileExt = path.extname(newResumePath.name);
+      const resumeFileName = `resume_${existingTeacher._id}${resumeFileExt}`;
+      await uploadFile(newResumePath, resumeFileName, `${filesStoragePath}/teachers/resumes`);
+      newResumePath = `${filesStorageUrl}/files/teachers/resumes/${resumeFileName}`;
+      teacher.resume = newResumePath;
+    }
 
-    await Teacher.findByIdAndUpdate(id, {
-      name,
-      email,
-      phone,
-      resume: newResumePath,
-      image: newImagePath,
-    });
+    teacher.name = name;
+    teacher.email = email;
+    teacher.phone = phone;
+
+    await teacher.save();
 
     res.status(200).json("Teacher updated successfully");
   } catch (error) {
