@@ -24,7 +24,8 @@ export const addStudent = async (req, res) => {
     }
 
     // Generate a random password
-    const randomPassword = crypto.randomBytes(4).toString("hex"); // Generates a random 16-character password
+    // const randomPassword = crypto.randomBytes(4).toString("hex"); 
+    const randomPassword = "lca@123456";
 
     // Hash the password
     const saltRounds = 10;
@@ -71,7 +72,7 @@ export const addStudent = async (req, res) => {
     await generateQrCode(newStudent._id);
 
     // Send welcome email to the student with the random password
-    await addEmailToQueue(email, name, randomPassword);
+    // await addEmailToQueue(email, name, randomPassword);
 
     res.status(200).json("Student Added Successfully");
   } catch (error) {
