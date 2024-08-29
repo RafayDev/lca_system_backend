@@ -174,7 +174,7 @@ export const updateStudent = async (req, res) => {
     const imageFileExt = path.extname(imageFile.name);
     const imageFileName = `avatar_${id}${imageFileExt}`;
     await uploadFile(imageFile, imageFileName, `${filesStoragePath}/students/avatars`);
-    const imageWebpFileName = `avatar_${id}.webp`;
+    const imageWebpFileName = `avatar_${id}.jpeg`;
     await compressImage(`${filesStoragePath}/students/avatars/${imageFileName}`, `${filesStoragePath}/students/avatars/${imageWebpFileName}`, 50);
     const imagePath = `${filesStorageUrl}/files/students/avatars/${imageWebpFileName}`
 
@@ -183,7 +183,7 @@ export const updateStudent = async (req, res) => {
     const cnicImageFileExt = path.extname(cnicImageFile.name);
     const cnicImageFileName = `cnic_front_${id}${cnicImageFileExt}`;
     await uploadFile(cnicImageFile, cnicImageFileName, `${filesStoragePath}/students/cnic_images`);
-    const cnicImageWebpFileName = `cnic_front_${id}.webp`;
+    const cnicImageWebpFileName = `cnic_front_${id}.jpeg`;
     await compressImage(`${filesStoragePath}/students/cnic_images/${cnicImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`, 50);
     const cnic_imagePath = `${filesStorageUrl}/files/students/cnic_images/${cnicImageWebpFileName}`
 
@@ -192,7 +192,7 @@ export const updateStudent = async (req, res) => {
     const cnicBackImageFileExt = path.extname(cnicBackImageFile.name);
     const cnicBackImageFileName = `cnic_back_${id}${cnicBackImageFileExt}`;
     await uploadFile(cnicBackImageFile, cnicBackImageFileName, `${filesStoragePath}/students/cnic_images`);
-    const cnicBackImageWebpFileName = `cnic_back_${id}.webp`;
+    const cnicBackImageWebpFileName = `cnic_back_${id}.jpeg`;
     await compressImage(`${filesStoragePath}/students/cnic_images/${cnicBackImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
     const cnic_back_imagePath = `${filesStorageUrl}/files/students/cnic_images/${cnicBackImageWebpFileName}`
 
@@ -293,7 +293,7 @@ export const updateStudentinfo = async (req, res) => {
     const imageFileExt = path.extname(imageFile.name);
     const imageFileName = `avatar_${id}${imageFileExt}`;
     await uploadFile(imageFile, imageFileName, `${filesStoragePath}/students/avatars`);
-    const imageWebpFileName = `avatar_${id}.webp`;
+    const imageWebpFileName = `avatar_${id}.jpeg`;
     await compressImage(`${filesStoragePath}/students/avatars/${imageFileName}`, `${filesStoragePath}/students/avatars/${imageWebpFileName}`, 50);
     const imagePath = `${filesStorageUrl}/files/students/avatars/${imageWebpFileName}`
 
@@ -302,7 +302,7 @@ export const updateStudentinfo = async (req, res) => {
     const cnicImageFileExt = path.extname(cnicImageFile.name);
     const cnicImageFileName = `cnic_front_${id}${cnicImageFileExt}`;
     await uploadFile(cnicImageFile, cnicImageFileName, `${filesStoragePath}/students/cnic_images`);
-    const cnicImageWebpFileName = `cnic_front_${id}.webp`;
+    const cnicImageWebpFileName = `cnic_front_${id}.jpeg`;
     await compressImage(`${filesStoragePath}/students/cnic_images/${cnicImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicImageWebpFileName}`, 50);
     const cnic_imagePath = `${filesStorageUrl}/files/students/cnic_images/${cnicImageWebpFileName}`
 
@@ -311,7 +311,7 @@ export const updateStudentinfo = async (req, res) => {
     const cnicBackImageFileExt = path.extname(cnicBackImageFile.name);
     const cnicBackImageFileName = `cnic_back_${id}${cnicBackImageFileExt}`;
     await uploadFile(cnicBackImageFile, cnicBackImageFileName, `${filesStoragePath}/students/cnic_images`);
-    const cnicBackImageWebpFileName = `cnic_back_${id}.webp`;
+    const cnicBackImageWebpFileName = `cnic_back_${id}.jpeg`;
     await compressImage(`${filesStoragePath}/students/cnic_images/${cnicBackImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
     const cnic_back_imagePath = `${filesStorageUrl}/files/students/cnic_images/${cnicBackImageWebpFileName}`
 

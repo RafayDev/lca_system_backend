@@ -23,7 +23,7 @@ export const addTeacher = async (req, res) => {
     const imageFileExt = path.extname(imageFile.name);
     const imageFileName = `avatar_${emailStr}${imageFileExt}`;
     await uploadFile(imageFile, imageFileName, `${filesStoragePath}/teachers/avatars`);
-    const imageWebpFileName = `avatar_${emailStr}.webp`;
+    const imageWebpFileName = `avatar_${emailStr}.jpeg`;
     await compressImage(`${filesStoragePath}/teachers/avatars/${imageFileName}`, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
     const imageUrl = `${filesStorageUrl}/files/teachers/avatars/${imageFileName}`;
 
@@ -46,7 +46,7 @@ export const addTeacher = async (req, res) => {
     const teacher = await Teacher.findById(_id);
 
     // update the name of compressed image
-    const newImageFileName = `avatar_${newTeacher._id}.webp`;
+    const newImageFileName = `avatar_${newTeacher._id}.jpeg`;
     renameFile(`${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, `${filesStoragePath}/teachers/avatars/${newImageFileName}`);
     teacher.image = `${filesStorageUrl}/files/teachers/avatars/${newImageFileName}`
 
@@ -107,7 +107,7 @@ export const deleteTeacher = async (req, res) => {
 
     const filesStoragePath = process.env.FILES_STORAGE_PATH;
 
-    const imageFileName = `avatar_${id}.webp`;
+    const imageFileName = `avatar_${id}.jpeg`;
     const resumeFileName = `resume_${id}.pdf`;
 
     // delete the image from file storage
@@ -147,7 +147,7 @@ export const updateTeacher = async (req, res) => {
       const newImageFileExt = path.extname(newImagePath.name);
       const newImageFileName = `avatar_${teacher._id}${newImageFileExt}`;
       await uploadFile(newImagePath, newImageFileName, `${filesStoragePath}/teachers/avatars`);
-      const imageWebpFileName = `avatar_${teacher._id}.webp`;
+      const imageWebpFileName = `avatar_${teacher._id}.jpeg`;
       await compressImage(`${filesStoragePath}/teachers/avatars/${newImageFileName}`, `${filesStoragePath}/teachers/avatars/${imageWebpFileName}`, 50);
       newImagePath = `${filesStorageUrl}/files/teachers/avatars/${imageWebpFileName}`;
       teacher.image = newImagePath;

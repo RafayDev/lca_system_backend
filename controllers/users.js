@@ -296,7 +296,7 @@ export const changeAvatar = async (req, res) => {
     await uploadFile(avatarFile, avatarFileName, `${filesStoragePath}/avatars`);
     
     // compress the image to webp 
-    const webpFileName = `avatar_${id}.webp`;
+    const webpFileName = `avatar_${id}.jpeg`;
     await compressImage(`${filesStoragePath}/avatars/${avatarFileName}`, `${filesStoragePath}/avatars/${webpFileName}`, 50);
 
     // Get the download URL of the compressed image

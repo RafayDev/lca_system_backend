@@ -40,7 +40,7 @@ export const compressImage = async (originalFilePath, compressedFilePath, qualit
 
     // Compress the image
     const compressedBuffer = await sharp(imageBuffer)
-      .webp({ quality })
+      .jpeg({ quality })
       .toBuffer();
 
     // Save the compressed image
