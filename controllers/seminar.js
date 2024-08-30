@@ -140,3 +140,18 @@ export const getSeminarsWithAttendeeCounts = async (req, res) => {
     throw error;
   }
 };
+
+export const getallSeminarwithAttendees = async (req, res) => {
+  try {
+    const seminars = await Seminar.find().populate("seminarAttendees");
+
+    const seminarWithAttendeesCount = seminars.map((seminar) => ({
+      seminar: seminar,
+      count: seminar.seminarAttendees.length,
+    }));
+
+    res.status(200).json(seminarWithAttendeesCount);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}

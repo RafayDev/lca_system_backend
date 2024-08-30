@@ -1,5 +1,5 @@
 import express from 'express';
-import { getSeminars, getSeminar, addSeminar, updateSeminar, deleteSeminar,getTodaySeminars, getSeminarsWithAttendeeCounts } from '../controllers/seminar.js';
+import { getSeminars, getSeminar, addSeminar, updateSeminar, deleteSeminar,getTodaySeminars, getSeminarsWithAttendeeCounts,getallSeminarwithAttendees } from '../controllers/seminar.js';
 import auth from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -12,5 +12,6 @@ router.post('/update/:id',auth,updateSeminar);
 router.delete('/delete/:id',auth,deleteSeminar);
 router.get('/seminar/today',getTodaySeminars);
 router.get('/seminar/getSeminarAttendees',getSeminarsWithAttendeeCounts);
+router.get('/seminar/getallSeminarwithAttendees',getallSeminarwithAttendees);
 
 export default router
