@@ -95,7 +95,7 @@ export const getBatchAndCourses = async (req, res) => {
 
     const courseIds = enrollment.courses;
 
-    const courses = await Course.find({ _id: { $in: courseIds } }, { name: 1 });
+    const courses = await Course.find({ _id: { $in: courseIds } });
     if (!courses || courses.length === 0) {
       return res.status(404).json({ message: "Courses not found" });
     }
