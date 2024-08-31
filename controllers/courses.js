@@ -82,13 +82,13 @@ export const getBatchAndCourses = async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-
+    
     const batch = await Batch.findById(student.batch);
     if (!batch) {
       return res.status(404).json({ message: "Batch not found" });
     }
-
-    const enrollment = await Enrollment.findOne({ student: studentId }).sort({ createdAt: -1 });
+    
+    const enrollment = await Enrollment.findOne({ student: student._id, batch: student.batch });
     if (!enrollment) {
       return res.status(404).json({ message: "Enrollment not found" });
     }
