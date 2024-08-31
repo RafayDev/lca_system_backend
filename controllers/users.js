@@ -374,3 +374,24 @@ export const forgotPassword = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+//get all those users who have role student and change their password
+export const resetPasswordForAllStudents = async (req, res) => {
+
+  try {
+    const users = await User.find({ role: "student" });
+
+    for (const user of users) {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash("lca@123456", saltRounds);
+
+      user.password = hashedPassword;
+
+      await user.save();
+    }
+
+    res.status(200).json({ message: "Password reset for all students successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
