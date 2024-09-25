@@ -100,9 +100,12 @@ export const getBatchAndCourses = async (req, res) => {
       return res.status(404).json({ message: "Courses not found" });
     }
 
-    const courseNames = courses.map(course => course.name);
+    const courseDetails = courses.map(course => ({
+      id: course._id,
+      name: course.name
+    }));
 
-    res.status(200).json({ batchName: batch.name, courseNames });
+    res.status(200).json({ batchName: batch.name, courses: courseDetails });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
