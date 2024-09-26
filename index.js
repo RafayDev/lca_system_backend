@@ -20,6 +20,7 @@ import timetableRoutes from './routes/timeTables.js';
 import enrollmentRoutes from './routes/enrollments.js';
 import statisticsRoutes from './routes/statistics.js';
 import mcqsRoutes from './routes/mcqs.js';
+import pastPaperRoutes from './routes/pastPapers.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -46,6 +47,7 @@ app.use('/timetable',timetableRoutes);
 app.use('/enrollments',enrollmentRoutes);
 app.use('/statistics', statisticsRoutes);
 app.use('/mcqs', mcqsRoutes);
+app.use('/pastPapers', pastPaperRoutes);
 
 const CONNECTION_URL = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
