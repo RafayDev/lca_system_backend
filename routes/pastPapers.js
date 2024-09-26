@@ -9,6 +9,6 @@ router.get('/:id',getPastPaperById)
 router.post('/add',createPastPaper)
 router.post('/update/:id',auth,updatePastPaper)
 router.delete('/delete/:id',deletePastPaper)
-router.get('/pastPapers/papers',getPastPaperByCourseAndYear)
+router.post('/pastPapers/papers',getPastPaperByCourseAndYear)
 
 export default router
