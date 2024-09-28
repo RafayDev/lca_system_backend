@@ -3,7 +3,7 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const feeSchema = mongoose.Schema({
     amount: Number,
-    due_date: Date,
+    due_date: String,
     status: {
         type: String,
         default: "Pending",
@@ -13,12 +13,10 @@ const feeSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Student",
     },
-    logs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "FeeLog",
-        },
-    ]
+    batch: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Batch",
+    }
 });
 
 feeSchema.plugin(mongoosePaginate);

@@ -1,13 +1,15 @@
-import Fee from "../models/fees";
-import FeeLog from "../models/feeLogs";
+import Fee from "../models/fees.js";
+import FeeLog from "../models/feeLogs.js";
 import dotenv from "dotenv";
+import Student from "../models/students.js";
+import moment from "moment-timezone";
 dotenv.config();
 
 export const getFees = async (req, res) => {
     const { query, status } = req.query;
 
     try {
-        const searchQuery = query ? query : null;
+        const searchQuery = query ? query : '';
 
         const filter = {};
 
@@ -24,14 +26,12 @@ export const getFees = async (req, res) => {
                     match: {
                         name: { $regex: searchQuery, $options: "i" },
                     },
-                }
+                },
+                { path: "batch" },
             ],
         };
 
         const fees = await Fee.paginate(filter, options);
-
-        // Filter out fees where student is null (didn't match the regex)
-        fees.docs = fees.docs.filter((f) => f.student != null);
 
         res.status(200).json(fees);
     } catch (error) {
@@ -53,15 +53,27 @@ export const getFeeById = async (req, res) => {
 }
 
 export const createFee = async (req, res) => {
-    const { student_id, amount } = req.body;
+    const { student_id, batch_id, amount } = req.body;
     try {
+        if (amount <= 0) {
+            return res.status(400).json({ message: "Amount must be greater than 0" });
+        }
+
         const student = await Student.findById(student_id);
         if (!student) {
             return res.status(404).json({ message: "Student not found" });
         }
-        const fee = new Fee({
+
+        const fee = await Fee.findOne({ student: student_id, batch: batch_id });
+        if (fee) {
+            return res.status(400).json({ message: "Fee already exists" });
+        }
+
+        const newFee = new Fee({
             student: student_id,
+            batch: batch_id,
             amount,
+            due_date: moment().tz("Asia/Karachi").format("YYYY-MM-DD"),
         });
 
         const feeLog = new FeeLog({
@@ -69,12 +81,12 @@ export const createFee = async (req, res) => {
             action_date: new Date(),
             action_type: "Created",
             action_by: req.user._id,
-            fee: fee._id,
+            fee: newFee._id,
         });
 
-        await fee.save();
+        await newFee.save();
         await feeLog.save();
-        res.status(201).json(fee);
+        res.status(201).json(newFee);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
