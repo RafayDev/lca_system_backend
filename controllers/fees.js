@@ -255,7 +255,16 @@ export const getFeeLogs = async (req, res) => {
 export const getFeesByStudentId = async (req, res) => {
     const { id } = req.params;
     try {
+        const student = await Student.findById(id);
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
         const fees = await Fee.find({ student: id }).populate("student").populate("batch");
+
+        if (!fees || fees.length === 0) {
+            return res.status(404).json({ message: "No fees found for the student" });
+        }
 
         const uniqueBatchIds = [...new Set(fees.map(fee => fee.batch._id))];
 
