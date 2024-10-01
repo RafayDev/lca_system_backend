@@ -1,8 +1,9 @@
 import Fee from "../models/fees.js";
 import FeeLog from "../models/feeLogs.js";
 import User from "../models/users.js";
-import dotenv from "dotenv";
 import Student from "../models/students.js";
+import Batch from "../models/batches.js";
+import dotenv from "dotenv";
 import moment from "moment-timezone";
 dotenv.config();
 
@@ -254,8 +255,68 @@ export const getFeeLogs = async (req, res) => {
 export const getFeesByStudentId = async (req, res) => {
     const { id } = req.params;
     try {
-        const fees = await Fee.find({ student: id });
-        res.status(200).json(fees);
+        const fees = await Fee.find({ student: id }).populate("student").populate("batch");
+
+        const uniqueBatchIds = [...new Set(fees.map(fee => fee.batch._id))];
+
+        const feeLogs = await Promise.all(uniqueBatchIds.map(async (batchId) => {
+            const batchFeeLogs = await FeeLog.find({ fee: { $in: fees.filter(fee => fee.batch._id === batchId) } });
+            const batch = await Batch.findById(batchId);
+            return { batch, feeLogs: batchFeeLogs };
+        }));
+
+        // total fee amount in feeLogs where action_type is "Paid"
+        const totalPaidFeeAmount = feeLogs.reduce((acc, curr) => {
+            const paidFeeLogs = curr.feeLogs.filter(log => log.action_type === "Paid");
+            return acc + paidFeeLogs.reduce((acc, curr) => acc + curr.action_amount, 0);
+        }, 0);
+
+        // total fee amount in feeLogs where action_type is "Discounted"
+        const totalDiscountedFeeAmount = feeLogs.reduce((acc, curr) => {
+            const discountedFeeLogs = curr.feeLogs.filter(log => log.action_type === "Discounted");
+            return acc + discountedFeeLogs.reduce((acc, curr) => acc + curr.action_amount, 0);
+        }, 0);
+
+        // total fee amount in feeLogs where action_type is "Created"
+        const totalCreatedFeeAmount = feeLogs.reduce((acc, curr) => {
+            const createdFeeLogs = curr.feeLogs.filter(log => log.action_type === "Created");
+            return acc + createdFeeLogs.reduce((acc, curr) => acc + curr.amount, 0);
+        }, 0);
+
+        // total pending fee amount
+        const totalPendingFeeAmount = fees.reduce((acc, curr) => {
+            if (curr.status === "Pending") {
+                return acc + curr.amount;
+            }
+            return acc;
+        }, 0);
+
+        const overallFeeStatistics = {
+            totalPaidFeeAmount,
+            totalDiscountedFeeAmount,
+            totalCreatedFeeAmount,
+            totalPendingFeeAmount
+        };
+
+        const batchWiseFeeStatistics = [];
+
+        for (const fee of fees) {
+            const batchFeeLogs = feeLogs.find(log => log.batch.toString() === fee.batch.toString());
+            if (batchFeeLogs) {
+                batchWiseFeeStatistics.push({
+                    batch: {
+                        _id: fee.batch._id,
+                        name: fee.batch.name
+                    },
+                    totalPaidFeeAmount: batchFeeLogs.feeLogs.filter(log => log.action_type === "Paid").reduce((acc, curr) => acc + curr.action_amount, 0),
+                    totalDiscountedFeeAmount: batchFeeLogs.feeLogs.filter(log => log.action_type === "Discounted").reduce((acc, curr) => acc + curr.action_amount, 0),
+                    totalCreatedFeeAmount: batchFeeLogs.feeLogs.filter(log => log.action_type === "Created").reduce((acc, curr) => acc + curr.amount, 0),
+                    totalPendingFeeAmount: batchFeeLogs.feeLogs.filter(log => log.action_type === "Pending").reduce((acc, curr) => acc + curr.amount, 0),
+                });
+            }
+        }
+
+        res.status(200).json({ overallFeeStatistics, batchWiseFeeStatistics });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
