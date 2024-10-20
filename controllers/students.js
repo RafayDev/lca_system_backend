@@ -150,7 +150,7 @@ export const updateStudent = async (req, res) => {
     pending_fee,
     total_fee,
   } = req.body;
-  const { image, cnic_image, cnic_back_image } = req.files;
+  const { image, cnic_image, cnic_back_image, latest_degree_image } = req.files;
 
   try {
     const student = await Student.findById(id);
@@ -196,6 +196,16 @@ export const updateStudent = async (req, res) => {
     await compressImage(`${filesStoragePath}/students/cnic_images/${cnicBackImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
     const cnic_back_imagePath = `${filesStorageUrl}/files/students/cnic_images/${cnicBackImageWebpFileName}`
 
+    
+    // Save Letest Degree image to Firebase storage
+    const latestDegreeImageFile = latest_degree_image;
+    const latestDegreeImageFileExt = path.extname(latestDegreeImageFile.name);
+    const latestDegreeImageFileName = `latest_degree_${id}${latestDegreeImageFileExt}`;
+    await uploadFile(latestDegreeImageFile, latestDegreeImageFileName, `${filesStoragePath}/students/latest_degree`);
+    const latestDegreeImageWebpFileName = `latest_degree_${id}.jpeg`;
+    await compressImage(`${filesStoragePath}/students/latest_degree/${cnicBackImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
+    const latest_degree_imagePath = `${filesStorageUrl}/files/students/latest_degree/${latestDegreeImageWebpFileName}`
+
     // Update the student record
     await Student.findByIdAndUpdate(id, {
       name,
@@ -215,6 +225,7 @@ export const updateStudent = async (req, res) => {
       cnic_image: cnic_imagePath,
       image: imagePath,
       cnic_back_image: cnic_back_imagePath,
+      latest_degree_image: latest_degree_imagePath,
       paid_fee,
       pending_fee,
       total_fee,
@@ -277,7 +288,7 @@ export const updateStudentinfo = async (req, res) => {
     completion_year,
     marks_cgpa,
   } = req.body;
-  const { image, cnic_image, cnic_back_image } = req.files;
+  const { image, cnic_image, cnic_back_image, latest_degree_image } = req.files;
 
   try {
     const student = await Student.findById(id);
@@ -315,6 +326,15 @@ export const updateStudentinfo = async (req, res) => {
     await compressImage(`${filesStoragePath}/students/cnic_images/${cnicBackImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
     const cnic_back_imagePath = `${filesStorageUrl}/files/students/cnic_images/${cnicBackImageWebpFileName}`
 
+    // Save Letest Degree image to Firebase storage
+    const latestDegreeImageFile = latest_degree_image;
+    const latestDegreeImageFileExt = path.extname(latestDegreeImageFile.name);
+    const latestDegreeImageFileName = `latest_degree_${id}${latestDegreeImageFileExt}`;
+    await uploadFile(latestDegreeImageFile, latestDegreeImageFileName, `${filesStoragePath}/students/latest_degree`);
+    const latestDegreeImageWebpFileName = `latest_degree_${id}.jpeg`;
+    await compressImage(`${filesStoragePath}/students/latest_degree/${cnicBackImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
+    const latest_degree_imagePath = `${filesStorageUrl}/files/students/latest_degree/${latestDegreeImageWebpFileName}`
+
     // Update the student record
     await Student.findByIdAndUpdate(id, {
       cnic,
@@ -329,6 +349,7 @@ export const updateStudentinfo = async (req, res) => {
       cnic_image: cnic_imagePath,
       image: imagePath,
       cnic_back_image: cnic_back_imagePath,
+      latest_degree_image: latest_degree_imagePath,
     });
 
     res.status(200).json("Student updated successfully");

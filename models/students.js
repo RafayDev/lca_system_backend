@@ -18,6 +18,7 @@ const studentSchema = mongoose.Schema({
   cnic_image: String,
   cnic_back_image: String,
   image: String,
+  latest_degree_image: String,
   qrcode: String,
   batch: {
     type: mongoose.Schema.Types.ObjectId,

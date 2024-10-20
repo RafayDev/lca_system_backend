@@ -4,6 +4,7 @@ import mongoosePaginate from "mongoose-paginate-v2";
 const attendeeSchema = mongoose.Schema({
   name: String,
   phone: String,
+  email: String,
   city: String,
   qualification: String,
   age: String,

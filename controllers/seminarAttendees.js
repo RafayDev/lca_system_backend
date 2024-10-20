@@ -20,13 +20,14 @@ export const getAttendee = async (req, res) => {
 };
 
 export const createAttendee = async (req, res) => {
-  const { name, phone, city, qualification, age, seminar_id } =
+  const { name, phone, email, city, qualification, age, seminar_id } =
     req.body;
 
   try {
     const newAttendee = new Attendee({
       name,
       phone,
+      email,
       city,
       qualification,
       age,
