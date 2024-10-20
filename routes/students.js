@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStudent, getStudents, addStudent, updateStudent, deleteStudent, getQrCode, updateStudentinfo, checkStudentFields, basicStudentUpdate, getStudentsGraph, getStudentsByBatchesGraph } from '../controllers/students.js';
+import { getStudent, getStudents, addStudent, getStudentsContacts, updateStudent, deleteStudent, getQrCode, updateStudentinfo, checkStudentFields, basicStudentUpdate, getStudentsGraph, getStudentsByBatchesGraph } from '../controllers/students.js';
 import auth from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -16,6 +16,7 @@ router.get('/checkStudentFields/:id',auth,checkStudentFields);
 router.post('/basic-update/:id',auth,basicStudentUpdate);
 router.get('/students/graph',getStudentsGraph)
 router.get('/students/Batchesgraph',getStudentsByBatchesGraph)
+router.get('/students/getStudentsContacts',getStudentsContacts)
 
 
 export default router

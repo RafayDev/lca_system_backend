@@ -457,3 +457,16 @@ export const getStudentsByBatchesGraph = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
+export const getStudentsContacts = async (req, res) => {
+  const { query } = req.query;
+  try {
+    const searchQuery = query ? query : "";
+    const students = await Student.find();
+    // Extracting phone numbers from students
+    const studentPhones = students.map(student => student.phone);
+    res.status(200).json({ total: studentPhones.length, phones: studentPhones });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
