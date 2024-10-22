@@ -332,7 +332,7 @@ export const updateStudentinfo = async (req, res) => {
     const latestDegreeImageFileName = `latest_degree_${id}${latestDegreeImageFileExt}`;
     await uploadFile(latestDegreeImageFile, latestDegreeImageFileName, `${filesStoragePath}/students/latest_degree`);
     const latestDegreeImageWebpFileName = `latest_degree_${id}.jpeg`;
-    await compressImage(`${filesStoragePath}/students/latest_degree/${latestDegreeImageFileName}`, `${filesStoragePath}/students/latest_degree/${latestDegreeImageFileName}`, 50);
+    await compressImage(`${filesStoragePath}/students/latest_degree/${latestDegreeImageFileName}`, `${filesStoragePath}/students/latest_degree/${latestDegreeImageWebpFileName}`, 50);
     const latest_degree_imagePath = `${filesStorageUrl}/files/students/latest_degree/${latestDegreeImageWebpFileName}`
 
     // Update the student record
