@@ -104,6 +104,16 @@ export const getStudents = async (req, res) => {
   }
 };
 
+export const getStudentsByBatch = async (req, res) => {
+  const { batchId } = req.params;
+  try {
+    const students = await Student.paginate({ batch: batchId });
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getStudent = async (req, res) => {
   const { id } = req.params;
   try {
@@ -196,7 +206,7 @@ export const updateStudent = async (req, res) => {
     await compressImage(`${filesStoragePath}/students/cnic_images/${cnicBackImageFileName}`, `${filesStoragePath}/students/cnic_images/${cnicBackImageWebpFileName}`, 50);
     const cnic_back_imagePath = `${filesStorageUrl}/files/students/cnic_images/${cnicBackImageWebpFileName}`
 
-    
+
     // Save Letest Degree image to Firebase storage
     const latestDegreeImageFile = latest_degree_image;
     const latestDegreeImageFileExt = path.extname(latestDegreeImageFile.name);
