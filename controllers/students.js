@@ -491,3 +491,14 @@ export const getStudentsContacts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const deleteAllStudents = async (req, res) => {
+  try {
+    await Student.deleteMany();
+    await User.deleteMany({ role: "student" });
+    res.status(200).json("All students deleted successfully");
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
