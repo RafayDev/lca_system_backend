@@ -36,7 +36,7 @@ export const getFees = async (req, res) => {
         const fees = await Fee.paginate(filter, options);
 
         // Filter out fees where student is null (didn't match the regex)
-        fees.docs = fees.docs.filter((f) => f.student != null);
+        // fees.docs = fees.docs.filter((f) => f.student != null);
 
         res.status(200).json(fees);
     } catch (error) {
