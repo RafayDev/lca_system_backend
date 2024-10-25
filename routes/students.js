@@ -17,7 +17,7 @@ router.post('/basic-update/:id',auth,basicStudentUpdate);
 router.get('/students/graph',getStudentsGraph)
 router.get('/students/Batchesgraph',getStudentsByBatchesGraph)
 router.get('/students/getStudentsContacts',getStudentsContacts)
-router.delete('/deleteAllStudents/:id',auth,deleteAllStudents);
+router.delete('/deleteAllStudents',auth,deleteAllStudents);
 
 
 export default router
