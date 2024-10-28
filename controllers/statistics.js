@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import moment from "moment";
 import Batch from "../models/batches.js";
 import Student from "../models/students.js";
+import Fee from "../models/fees.js";
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -26,12 +27,12 @@ export const getStatistics = async (req, res) => {
     const total_enrolled_students_count = await Student.countDocuments();
 
     // Fees Statistics
-    const total_fee_record_result = await Student.aggregate([
+    const total_fee_record_result = await Fee.aggregate([
       {
         $group: {
           _id: null,
           totalFeeRecord: {
-            $sum: { $toDouble: "$total_fee" },
+            $sum: { $toDouble: "$status" },
           },
         },
       },
@@ -51,10 +52,10 @@ export const getStatistics = async (req, res) => {
         },
       },
     ]);
-    const total_fee_recovered =
-      total_fee_recovered_result.length > 0
-        ? total_fee_recovered_result[0].totalFeeRecovered
-        : 0;
+    const total_fee_paid_result = await Fee.countDocuments({
+      amount: "0",
+    });
+    const total_fee_recovered = total_fee_paid_result > 0 ? total_fee_paid_result : 0;
 
     const total_fee_pending = total_fee_record - total_fee_recovered;
 
