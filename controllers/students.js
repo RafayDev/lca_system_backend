@@ -106,8 +106,17 @@ export const getStudents = async (req, res) => {
 
 export const getStudentsByBatch = async (req, res) => {
   const { batchId } = req.params;
+  const { query } = req.query;
   try {
-    const students = await Student.paginate({ batch: batchId });
+    const students = await Student.paginate(
+      { 
+        batch: batchId 
+      },
+      {
+        page: parseInt(req.query.page),
+        limit: parseInt(req.query.limit),
+        populate: ["batch"],
+      });
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ message: error.message });
