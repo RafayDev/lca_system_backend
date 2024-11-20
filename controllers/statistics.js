@@ -58,7 +58,7 @@ export const getStatistics = async (req, res) => {
     ]);
     const total_fee_paid = total_fee_paid_result.length > 0 ? total_fee_paid_result[0].total : 0;
 
-    const total_fee_record = total_fee_created - total_fee_discounted - total_fee_deleted;
+    const total_fee_record = total_fee_created - total_fee_discounted;
 
     const total_fee_recovered = total_fee_paid;
 
