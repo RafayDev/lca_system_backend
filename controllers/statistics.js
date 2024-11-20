@@ -42,7 +42,7 @@ export const getStatistics = async (req, res) => {
 
     const total_fee_discounted_result = await FeeLogs.aggregate([
       { $match: { action_type: "Discounted" } },
-      { $group: { _id: null, total: { $sum: { $toDouble: "$amount" } } } }
+      { $group: { _id: null, total: { $sum: { $toDouble: "$action_amount" } } } }
     ]);
     const total_fee_discounted = total_fee_discounted_result.length > 0 ? total_fee_discounted_result[0].total : 0;
 
@@ -54,11 +54,11 @@ export const getStatistics = async (req, res) => {
 
     const total_fee_paid_result = await FeeLogs.aggregate([
       { $match: { action_type: "Paid" } },
-      { $group: { _id: null, total: { $sum: { $toDouble: "$amount" } } } }
+      { $group: { _id: null, total: { $sum: { $toDouble: "$action_amount" } } } }
     ]);
     const total_fee_paid = total_fee_paid_result.length > 0 ? total_fee_paid_result[0].total : 0;
 
-    const total_fee_record = total_fee_created;
+    const total_fee_record = total_fee_created - total_fee_discounted - total_fee_deleted;
 
     const total_fee_recovered = total_fee_paid;
 
