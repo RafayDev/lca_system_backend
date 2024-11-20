@@ -106,6 +106,7 @@ export const getAttendences = async (req, res) => {
     const options = {
       page: parseInt(req.query.page, 10) || 1,
       limit: parseInt(req.query.limit, 10) || 10,
+      sort: { date: -1 },
       populate: [
         { path: "course" },
         { path: "batch" },

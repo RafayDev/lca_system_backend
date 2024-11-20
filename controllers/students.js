@@ -86,16 +86,17 @@ export const getStudents = async (req, res) => {
     const searchQuery = query ? query : "";
     const students = await Student.paginate(
       {
-        $or: [
-          { name: { $regex: searchQuery, $options: "i" } },
-          { email: { $regex: searchQuery, $options: "i" } },
-          { phone: { $regex: searchQuery, $options: "i" } },
-        ],
+      $or: [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { email: { $regex: searchQuery, $options: "i" } },
+        { phone: { $regex: searchQuery, $options: "i" } },
+      ],
       },
       {
-        page: parseInt(req.query.page),
-        limit: parseInt(req.query.limit),
-        populate: ["batch"],
+      page: parseInt(req.query.page),
+      limit: parseInt(req.query.limit),
+      populate: ["batch"],
+      sort: { admission_date: -1 }, // Sort by admission_date in descending order
       }
     );
     res.status(200).json(students);

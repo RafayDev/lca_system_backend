@@ -22,6 +22,7 @@ export const getFees = async (req, res) => {
         const options = {
             page: parseInt(req.query.page, 10) || 1,
             limit: parseInt(req.query.limit, 10) || 10,
+            sort: { due_date: -1 },
             populate: [
                 {
                     path: "student",
