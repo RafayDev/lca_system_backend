@@ -54,7 +54,7 @@ export const getFees = async (req, res) => {
 export const getFeeById = async (req, res) => {
     const { id } = req.params;
     try {
-        const fee = await Fee.findById(id).populate("student");
+        const fee = await Fee.findById(id).populate("student").populate("batch");
         if (!fee) {
             return res.status(404).json({ message: "Fee not found" });
         }
