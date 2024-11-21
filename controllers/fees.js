@@ -8,7 +8,7 @@ import moment from "moment-timezone";
 dotenv.config();
 
 export const getFees = async (req, res) => {
-    const { query, status } = req.query;
+    const { query, status, date } = req.query;
 
     try {
         const searchQuery = query ? query : '';
@@ -17,6 +17,12 @@ export const getFees = async (req, res) => {
 
         if (status) {
             filter.status = status;
+        }
+
+        if (date) {
+            var fileter_date = moment(date).tz("Asia/Karachi").format("YYYY-MM-DD");
+            console.log(fileter_date);
+            filter.due_date = fileter_date;
         }
 
         const options = {
@@ -36,8 +42,8 @@ export const getFees = async (req, res) => {
 
         const fees = await Fee.paginate(filter, options);
 
-        // Filter out fees where student is null (didn't match the regex)
-        // fees.docs = fees.docs.filter((f) => f.student != null);
+        // Filter out fees with null students when search query is applied
+        fees.docs = fees.docs.filter(fee => fee.student !== null);
 
         res.status(200).json(fees);
     } catch (error) {
